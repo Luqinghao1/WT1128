@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsWidget</class>
+ <widget class="QWidget" name="SettingsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>系统设置</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 试井解释软件系统设置界面样式 */
+QWidget {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: &quot;Microsoft YaHei&quot;, &quot;微软雅黑&quot;, sans-serif;
+    font-size: 13px;
+}
+
+/* 标题栏样式 */
+#headerFrame {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #0f172a, stop:0.5 #1e293b, stop:1 #334155);
+    border-radius: 8px 8px 0px 0px;
+    border: none;
+}
+
+#headerLabel {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    background: transparent;
+    padding: 8px 16px;
+}
+
+#headerIcon {
+    padding: 12px;
+}
+
+/* 左侧导航栏样式 */
+#navigationList {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #64748b, stop:1 #475569);
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+#navigationList::item {
+    height: 45px;
+    padding: 8px 16px;
+    margin: 2px 4px;
+    border-radius: 6px;
+    border-left: 4px solid transparent;
+}
+
+#navigationList::item:selected {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #2563eb, stop:1 #1d4ed8);
+    color: white;
+    border-left: 4px solid #fbbf24;
+    font-weight: bold;
+}
+
+#navigationList::item:hover:!selected {
+    background: rgba(37, 99, 235, 0.15);
+    border-left: 4px solid #94a3b8;
+}
+
+/* 内容区域样式 */
+#contentStackedWidget {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+/* 分组框样式 */
+QGroupBox {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 12px;
+    color: #0f172a;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #f1f5f9, stop:1 #e2e8f0);
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* 输入框样式 */
+QLineEdit, QComboBox, QSpinBox {
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: white;
+    selection-background-color: #2563eb;
+    color: #1e293b;
+    min-height: 20px;
+    font-size: 13px;
+}
+
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus {
+    border: 2px solid #2563eb;
+    background: #f8fafc;
+}
+
+QLineEdit:hover, QComboBox:hover, QSpinBox:hover {
+    border: 2px solid #64748b;
+}
+
+/* 按钮样式 */
+QPushButton {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    min-width: 100px;
+    font-size: 13px;
+    color: white;
+}
+
+QPushButton#applyButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #2563eb, stop:1 #1d4ed8);
+}
+
+QPushButton#applyButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #3b82f6, stop:1 #2563eb);
+}
+
+QPushButton#cancelButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #64748b, stop:1 #475569);
+}
+
+QPushButton#cancelButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #94a3b8, stop:1 #64748b);
+}
+
+QPushButton[class=&quot;browseButton&quot;] {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #7c3aed, stop:1 #6d28d9);
+    min-width: 80px;
+}
+
+QPushButton[class=&quot;browseButton&quot;]:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #8b5cf6, stop:1 #7c3aed);
+}
+
+/* 新增关闭按钮样式 */
+QPushButton#closeButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #ef4444, stop:1 #dc2626);
+}
+
+QPushButton#closeButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f87171, stop:1 #ef4444);
+}
+
+/* 复选框样式 */
+QCheckBox {
+    color: #1e293b;
+    spacing: 8px;
+    font-size: 13px;
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 2px solid #cbd5e1;
+    background: white;
+}
+
+QCheckBox::indicator:checked {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #2563eb, stop:1 #1d4ed8);
+    border: 2px solid #2563eb;
+}
+
+QCheckBox::indicator:hover {
+    border: 2px solid #2563eb;
+}
+
+/* 标签样式 */
+QLabel {
+    color: #1e293b;
+    font-size: 13px;
+}
+
+QLabel[class=&quot;helpText&quot;] {
+    color: #64748b;
+    font-size: 11px;
+    font-style: italic;
+}
+
+/* 信息框样式 */
+QFrame[class=&quot;infoFrame&quot;] {
+    background: #e0f2fe;
+    border: 2px solid #0ea5e9;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* 底部按钮栏样式 */
+#footerFrame {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f8fafc, stop:1 #f1f5f9);
+    border-top: 2px solid #e2e8f0;
+    border-radius: 0px 0px 8px 8px;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,1,0">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>8</number>
+   </property>
+   <property name="topMargin">
+    <number>8</number>
+   </property>
+   <property name="rightMargin">
+    <number>8</number>
+   </property>
+   <property name="bottomMargin">
+    <number>8</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="headerFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="headerLayout">
+      <property name="leftMargin">
+       <number>16</number>
+      </property>
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <property name="rightMargin">
+       <number>16</number>
+      </property>
+      <property name="bottomMargin">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="headerIcon">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="resource.qrc">:/new/prefix1/Resource/X5.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="headerLabel">
+        <property name="styleSheet">
+         <string notr="true">
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: bold;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+          background: transparent;
+          padding: 8px 16px;
+         </string>
+        </property>
+        <property name="text">
+         <string>试井解释软件 - 系统设置</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="headerSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="contentLayout" stretch="0,1">
+     <property name="spacing">
+      <number>12</number>
+     </property>
+     <item>
+      <widget class="QListWidget" name="navigationList">
+       <property name="minimumSize">
+        <size>
+         <width>180</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>180</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>文件路径</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>系统设置</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="contentStackedWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="pathPage">
+        <layout class="QVBoxLayout" name="pathLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="pathHeader">
+           <property name="styleSheet">
+            <string notr="true">font-size: 16px; font-weight: bold; color: #0f172a; padding: 8px 0px;</string>
+           </property>
+           <property name="text">
+            <string>📁 文件路径配置</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="defaultPathsGroup">
+           <property name="title">
+            <string>📂 默认存储路径</string>
+           </property>
+           <layout class="QGridLayout" name="defaultPathsLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="dataPathLabel">
+              <property name="text">
+               <string>数据文件存储路径:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="dataPathLineEdit">
+              <property name="placeholderText">
+               <string>选择试井数据文件的默认存储位置</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="browseDataPathButton">
+              <property name="text">
+               <string>浏览...</string>
+              </property>
+              <property name="class" stdset="0">
+               <string>browseButton</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="reportPathLabel">
+              <property name="text">
+               <string>报告输出路径:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="reportPathLineEdit">
+              <property name="placeholderText">
+               <string>选择分析报告的默认输出位置</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QPushButton" name="browseReportPathButton">
+              <property name="text">
+               <string>浏览...</string>
+              </property>
+              <property name="class" stdset="0">
+               <string>browseButton</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="backupPathLabel">
+              <property name="text">
+               <string>备份文件路径:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="backupPathLineEdit">
+              <property name="placeholderText">
+               <string>选择自动备份文件的存储位置</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QPushButton" name="browseBackupPathButton">
+              <property name="text">
+               <string>浏览...</string>
+              </property>
+              <property name="class" stdset="0">
+               <string>browseButton</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="pathInfoFrame">
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <property name="class" stdset="0">
+            <string>infoFrame</string>
+           </property>
+           <layout class="QVBoxLayout" name="pathInfoLayout">
+            <item>
+             <widget class="QLabel" name="pathInfoLabel">
+              <property name="text">
+               <string>💡 提示：
+• 数据文件路径：保存导入的试井数据文件（.dat, .txt, .csv等）
+• 报告输出路径：保存生成的分析报告（.pdf, .docx, .html等）
+• 备份文件路径：保存项目和数据的自动备份文件</string>
+              </property>
+              <property name="class" stdset="0">
+               <string>helpText</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="pathSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="systemPage">
+        <layout class="QVBoxLayout" name="systemLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="systemHeader">
+           <property name="styleSheet">
+            <string notr="true">font-size: 16px; font-weight: bold; color: #0f172a; padding: 8px 0px;</string>
+           </property>
+           <property name="text">
+            <string>⚙️ 系统设置</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="autoSaveGroup">
+           <property name="title">
+            <string>💾 自动保存设置</string>
+           </property>
+           <layout class="QGridLayout" name="autoSaveLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="autoSaveLabel">
+              <property name="text">
+               <string>自动保存间隔:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="autoSaveHLayout">
+              <item>
+               <widget class="QSpinBox" name="autoSaveSpinBox">
+                <property name="suffix">
+                 <string> 分钟</string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>60</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="autoSaveSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="backupEnabledCheckBox">
+              <property name="text">
+               <string>启用自动备份</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="backupHLayout">
+              <item>
+               <widget class="QSpinBox" name="maxBackupsSpinBox">
+                <property name="suffix">
+                 <string> 个备份</string>
+                </property>
+                <property name="prefix">
+                 <string>保留 </string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>50</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="backupSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="logManagementGroup">
+           <property name="title">
+            <string>📋 日志管理</string>
+           </property>
+           <layout class="QGridLayout" name="logManagementLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="logLevelLabel">
+              <property name="text">
+               <string>日志记录级别:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="logLevelComboBox">
+              <item>
+               <property name="text">
+                <string>仅错误</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>警告和错误</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>一般信息</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>详细调试</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="cleanupOldLogsCheckBox">
+              <property name="text">
+               <string>自动清理过期日志</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="logCleanupLayout">
+              <item>
+               <widget class="QSpinBox" name="logRetentionSpinBox">
+                <property name="suffix">
+                 <string> 天</string>
+                </property>
+                <property name="prefix">
+                 <string>保留 </string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>365</number>
+                </property>
+                <property name="value">
+                 <number>30</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="logCleanupSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="systemSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="footerFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="footerLayout">
+      <property name="leftMargin">
+       <number>16</number>
+      </property>
+      <property name="topMargin">
+       <number>12</number>
+      </property>
+      <property name="rightMargin">
+       <number>16</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; color: #475569; font-size: 14px;</string>
+        </property>
+        <property name="text">
+         <string>系统设置 - 配置软件运行参数</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="footerSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cancelButton">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>36</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>重置</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="applyButton">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>36</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>应用设置</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

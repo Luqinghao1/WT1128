@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FittingWidget</class>
+ <widget class="QWidget" name="FittingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>自动拟合分析</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QGroupBox" name="groupBox_Control">
+      <property name="title">
+       <string>拟合控制面板</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label_Model">
+         <property name="text">
+          <string>选择理论模型:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboModelSelect">
+         <property name="toolTip">
+          <string>选择要拟合的试井解释模型</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_Algorithm">
+         <property name="text">
+          <string>选择拟合算法:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboAlgorithm">
+         <property name="toolTip">
+          <string>选择用于优化的数值算法</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Levenberg-Marquardt (推荐)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Nelder-Mead (单纯形法)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableParams">
+         <property name="columnCount">
+          <number>4</number>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>参数名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>初始值</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>参与拟合</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>参数范围</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_Status">
+         <item>
+          <widget class="QLabel" name="label_Error">
+           <property name="text">
+            <string>误差: N/A</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">font-weight: bold; color: darkred;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="textVisible">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_Btns">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btnLoadData">
+           <property name="text">
+            <string>1. 加载数据</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btnResetParams">
+           <property name="text">
+            <string>2. 重置参数</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QPushButton" name="btnRunFit">
+           <property name="text">
+            <string>3. 开始自动拟合</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: #4CAF50; color: white; font-weight: bold; padding: 5px;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="btnUpdateModel">
+           <property name="text">
+            <string>应用结果</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="btnStop">
+           <property name="text">
+            <string>停止</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: #F44336; color: white;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="plotContainer" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_Plot">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

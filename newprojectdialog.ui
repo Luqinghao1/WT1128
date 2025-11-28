@@ -1,0 +1,3084 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewProjectDialog</class>
+ <widget class="QDialog" name="NewProjectDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1050</width>
+    <height>986</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>新建试井解释项目</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/new/prefix1/Resource/project_icon.png</normaloff>:/new/prefix1/Resource/project_icon.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 试井解释软件现代化样式 */
+QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f8fafc, stop:1 #e2e8f0);
+    color: #1e293b;
+    font-family: &quot;Microsoft YaHei&quot;, &quot;微软雅黑&quot;, sans-serif;
+    font-size: 13px;
+}
+
+/* 标题栏样式 */
+#headerFrame {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #0f172a, stop:0.5 #1e293b, stop:1 #334155);
+    border-radius: 8px 8px 0px 0px;
+    border: none;
+}
+
+#headerLabel {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+#headerIcon {
+    padding: 12px;
+}
+
+/* 左侧导航栏样式 */
+#navigationList {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #64748b, stop:1 #475569);
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+#navigationList::item {
+    height: 50px;
+    padding: 8px 16px;
+    margin: 2px 4px;
+    border-radius: 6px;
+    border-left: 4px solid transparent;
+}
+
+#navigationList::item:selected {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #2563eb, stop:1 #1d4ed8);
+    color: white;
+    border-left: 4px solid #fbbf24;
+    font-weight: bold;
+}
+
+#navigationList::item:hover:!selected {
+    background: rgba(37, 99, 235, 0.15);
+    border-left: 4px solid #94a3b8;
+}
+
+/* 内容区域样式 */
+#stackedWidget {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+/* 进度条样式 */
+#progressBar {
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f1f5f9;
+    text-align: center;
+    font-weight: bold;
+}
+
+#progressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #059669, stop:1 #047857);
+    border-radius: 6px;
+}
+
+/* 预设按钮样式 */
+QPushButton[objectName*=&quot;preset&quot;] {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f59e0b, stop:1 #d97706);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    min-width: 100px;
+}
+
+QPushButton[objectName*=&quot;preset&quot;]:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #fbbf24, stop:1 #f59e0b);
+    transform: translateY(-1px);
+}
+
+QPushButton[objectName*=&quot;preset&quot;]:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #d97706, stop:1 #b45309);
+}
+
+/* 分组框样式 */
+QGroupBox {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 12px;
+    color: #0f172a;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #f1f5f9, stop:1 #e2e8f0);
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* 输入框样式 */
+QLineEdit, QComboBox, QDateTimeEdit, QSpinBox, QDoubleSpinBox {
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: white;
+    selection-background-color: #2563eb;
+    color: #1e293b;
+    min-height: 20px;
+    font-size: 13px;
+}
+
+QLineEdit:focus, QComboBox:focus, QDateTimeEdit:focus,
+QSpinBox:focus, QDoubleSpinBox:focus {
+    border: 2px solid #2563eb;
+    background: #f8fafc;
+}
+
+QLineEdit:hover, QComboBox:hover, QDateTimeEdit:hover,
+QSpinBox:hover, QDoubleSpinBox:hover {
+    border: 2px solid #64748b;
+}
+
+/* 下拉菜单样式 */
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    width: 25px;
+    border-left: 1px solid #cbd5e1;
+    border-radius: 0px 4px 4px 0px;
+    background: #f8fafc;
+}
+
+QComboBox::down-arrow {
+    image: url(:/new/prefix1/Resource/down_arrow.png);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    background: white;
+    color: #1e293b;
+    selection-background-color: #2563eb;
+    selection-color: white;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+/* 日期时间控件特殊样式 */
+QDateTimeEdit::drop-down, QDateEdit::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    width: 25px;
+    border-left: 1px solid #cbd5e1;
+    border-radius: 0px 4px 4px 0px;
+    background: #f8fafc;
+}
+
+QDateTimeEdit QAbstractItemView, QDateEdit QAbstractItemView {
+    background: white;
+    color: #1e293b;
+    selection-background-color: #2563eb;
+    selection-color: white;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+/* 按钮样式 */
+QPushButton {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    min-width: 100px;
+    font-size: 13px;
+    color: white;
+}
+
+QPushButton#nextButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #2563eb, stop:1 #1d4ed8);
+}
+
+QPushButton#nextButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #3b82f6, stop:1 #2563eb);
+}
+
+QPushButton#backButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #64748b, stop:1 #475569);
+}
+
+QPushButton#backButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #94a3b8, stop:1 #64748b);
+}
+
+QPushButton#cancelButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #dc2626, stop:1 #b91c1c);
+}
+
+QPushButton#cancelButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #ef4444, stop:1 #dc2626);
+}
+
+QPushButton#helpButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #059669, stop:1 #047857);
+}
+
+QPushButton#helpButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #10b981, stop:1 #059669);
+}
+
+QPushButton#selectPathButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #7c3aed, stop:1 #6d28d9);
+    min-width: 80px;
+}
+
+QPushButton#selectPathButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #8b5cf6, stop:1 #7c3aed);
+}
+
+/* 消息框按钮样式修复 */
+QMessageBox QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #3b82f6, stop:1 #2563eb);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-weight: bold;
+    min-width: 60px;
+}
+
+QMessageBox QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #60a5fa, stop:1 #3b82f6);
+}
+
+/* 单选按钮和复选框样式 */
+QRadioButton, QCheckBox {
+    color: #1e293b;
+    spacing: 8px;
+    font-size: 13px;
+}
+
+QRadioButton::indicator, QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: 2px solid #cbd5e1;
+    background: white;
+}
+
+QRadioButton::indicator:checked, QCheckBox::indicator:checked {
+    background: qradialgradient(cx:0.5, cy:0.5, radius:0.4,
+                fx:0.5, fy:0.5, stop:0 #2563eb, stop:1 white);
+    border: 2px solid #2563eb;
+}
+
+QRadioButton::indicator:hover, QCheckBox::indicator:hover {
+    border: 2px solid #2563eb;
+}
+
+/* 标签样式 */
+QLabel {
+    color: #1e293b;
+    font-size: 13px;
+}
+
+QLabel[labelClass=&quot;sectionHeader&quot;] {
+    color: #0f172a;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 0px;
+}
+
+QLabel[labelClass=&quot;helpText&quot;] {
+    color: #64748b;
+    font-size: 11px;
+    font-style: italic;
+}
+
+QLabel[labelClass=&quot;unitLabel&quot;] {
+    color: #64748b;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* 底部按钮栏样式 */
+#footerFrame {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f8fafc, stop:1 #f1f5f9);
+    border-top: 2px solid #e2e8f0;
+    border-radius: 0px 0px 8px 8px;
+}
+
+/* 计算结果框样式 */
+#fractureCalcFrame {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #f0f9ff, stop:1 #e0f2fe);
+    border: 2px solid #0ea5e9;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* 工具提示样式 */
+QToolTip {
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,1,0">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>8</number>
+   </property>
+   <property name="topMargin">
+    <number>8</number>
+   </property>
+   <property name="rightMargin">
+    <number>8</number>
+   </property>
+   <property name="bottomMargin">
+    <number>8</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="headerFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>70</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>70</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="headerLayout">
+      <property name="leftMargin">
+       <number>16</number>
+      </property>
+      <property name="topMargin">
+       <number>12</number>
+      </property>
+      <property name="rightMargin">
+       <number>16</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="headerIcon">
+        <property name="minimumSize">
+         <size>
+          <width>48</width>
+          <height>48</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>48</width>
+          <height>48</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="resource.qrc">:/new/prefix1/Resource/A1.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="headerTextLayout">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="headerLabel">
+          <property name="text">
+           <string>页岩油多段压裂水平井试井解释软件</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="headerSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="helpButton">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>帮助</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/help_icon.png</normaloff>:/new/prefix1/Resource/help_icon.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="progressLayout">
+     <property name="leftMargin">
+      <number>8</number>
+     </property>
+     <property name="topMargin">
+      <number>8</number>
+     </property>
+     <property name="rightMargin">
+      <number>8</number>
+     </property>
+     <property name="bottomMargin">
+      <number>8</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="progressLabel">
+       <property name="styleSheet">
+        <string notr="true">font-weight: bold; color: #475569;</string>
+       </property>
+       <property name="text">
+        <string>完成进度: 0% (0/6)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="textVisible">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="contentLayout" stretch="0,1">
+     <property name="spacing">
+      <number>12</number>
+     </property>
+     <item>
+      <widget class="QListWidget" name="navigationList">
+       <property name="minimumSize">
+        <size>
+         <width>220</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>220</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>项目基本信息</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/info_icon.png</normaloff>:/new/prefix1/Resource/info_icon.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>井筒参数</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/well_icon.png</normaloff>:/new/prefix1/Resource/well_icon.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>压裂参数</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/fracture_icon.png</normaloff>:/new/prefix1/Resource/fracture_icon.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>储层参数</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/reservoir_icon.png</normaloff>:/new/prefix1/Resource/reservoir_icon.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>流体特性</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/fluid_icon.png</normaloff>:/new/prefix1/Resource/fluid_icon.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>分析设置</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/analysis_icon.png</normaloff>:/new/prefix1/Resource/analysis_icon.png</iconset>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="pageBasicInfo">
+        <layout class="QVBoxLayout" name="basicInfoLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="basicInfoHeader">
+           <property name="text">
+            <string>📋 项目基本信息设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="presetLayout">
+           <item>
+            <widget class="QLabel" name="presetLabel">
+             <property name="styleSheet">
+              <string notr="true">font-weight: bold; color: #0f172a;</string>
+             </property>
+             <property name="text">
+              <string>🚀 快速配置预设:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="presetShaleOilButton">
+             <property name="toolTip">
+              <string>页岩油多段压裂水平井专用配置</string>
+             </property>
+             <property name="text">
+              <string>页岩油藏</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="presetTightOilButton">
+             <property name="toolTip">
+              <string>致密油储层试井配置</string>
+             </property>
+             <property name="text">
+              <string>致密油藏</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="presetConventionalButton">
+             <property name="toolTip">
+              <string>常规砂岩油藏配置</string>
+             </property>
+             <property name="text">
+              <string>常规油藏</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="presetSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="projectGroup">
+           <property name="title">
+            <string>📁 项目基础信息</string>
+           </property>
+           <layout class="QGridLayout" name="projectLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="projectNameEdit">
+              <property name="placeholderText">
+               <string>请输入项目名称</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QPushButton" name="selectPathButton">
+              <property name="text">
+               <string>浏览...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDateTimeEdit" name="dateTimeEdit">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLineEdit" name="engineerEdit">
+              <property name="placeholderText">
+               <string>请输入工程师姓名</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="dateLabel">
+              <property name="text">
+               <string>创建日期:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="fieldNameLabel">
+              <property name="text">
+               <string>油田名称:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="projectPathLabel">
+              <property name="text">
+               <string>项目路径:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="engineerLabel">
+              <property name="text">
+               <string>工程师:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="wellNameLabel">
+              <property name="text">
+               <string>井名:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLineEdit" name="wellNameEdit">
+              <property name="placeholderText">
+               <string>请输入井名</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="projectNameLabel">
+              <property name="text">
+               <string>项目名称:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="fieldNameEdit">
+              <property name="placeholderText">
+               <string>请输入油田名称</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QLineEdit" name="projectPathEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="placeholderText">
+               <string>选择项目保存路径</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="wellReservoirLayout">
+           <item>
+            <widget class="QGroupBox" name="wellTypeGroup">
+             <property name="title">
+              <string>🏭 井型配置</string>
+             </property>
+             <layout class="QGridLayout" name="wellTypeLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="wellTypeLabel">
+                <property name="text">
+                 <string>井类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="wellTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>水平井</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>垂直井</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>定向井</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="reservoirTypeLabel">
+                <property name="text">
+                 <string>储层类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="reservoirTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>页岩油藏</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>致密油藏</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>常规油藏</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="fractureTypeLabel">
+                <property name="text">
+                 <string>压裂类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="fractureTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>多段压裂</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>单段压裂</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>未压裂</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="testInfoGroup">
+             <property name="title">
+              <string>🔬 测试信息</string>
+             </property>
+             <layout class="QGridLayout" name="testInfoLayout">
+              <item row="2" column="1">
+               <widget class="QDateEdit" name="testDateEdit">
+                <property name="calendarPopup">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="testDateLabel">
+                <property name="text">
+                 <string>测试日期:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="testTypeLabel">
+                <property name="text">
+                 <string>测试类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <layout class="QHBoxLayout" name="durationLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="testDurationSpin">
+                  <property name="minimum">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>72.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="durationUnitLabel">
+                  <property name="text">
+                   <string>小时</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="analysisTypeLabel">
+                <property name="text">
+                 <string>分析类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="testDurationLabel">
+                <property name="text">
+                 <string>测试时长:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="testTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>压力恢复测试</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>压力降落测试</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>干扰试井</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="analysisTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>均质储层分析</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>双重介质分析</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>分形介质分析</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>压裂井分析</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="basicInfoSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageWellParams">
+        <layout class="QVBoxLayout" name="wellParamsLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="wellParamsHeader">
+           <property name="text">
+            <string>🏗️ 井筒参数设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="wellGeometryGroup">
+           <property name="title">
+            <string>📐 井筒几何参数</string>
+           </property>
+           <layout class="QGridLayout" name="wellGeometryLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="wellRadiusLabel">
+              <property name="text">
+               <string>井半径:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="wellRadiusLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="wellRadiusSpin">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="minimum">
+                 <double>0.001000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.091200000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="wellRadiusUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="horizontalLengthLabel">
+              <property name="text">
+               <string>水平段长度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <layout class="QHBoxLayout" name="horizontalLengthLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="horizontalLengthSpin">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>457.199999999999989</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="horizontalLengthUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="perforationTopLabel">
+              <property name="text">
+               <string>射孔顶部深度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="perforationTopLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="perforationTopSpin">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>2438.400000000000091</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="perforationTopUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="perforationBottomLabel">
+              <property name="text">
+               <string>射孔底部深度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <layout class="QHBoxLayout" name="perforationBottomLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="perforationBottomSpin">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>2468.900000000000091</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="perforationBottomUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="payZoneLabel">
+              <property name="text">
+               <string>有效厚度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <layout class="QHBoxLayout" name="payZoneLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="payZoneSpin">
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>30.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="payZoneUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="wellEquipmentGroup">
+           <property name="title">
+            <string>🔧 井下设备配置</string>
+           </property>
+           <layout class="QGridLayout" name="wellEquipmentLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="tuningLabel">
+              <property name="text">
+               <string>油管尺寸:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="tuningLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="tuningSpin">
+                <property name="maximum">
+                 <double>500.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>114.299999999999997</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="tuningUnitLabel">
+                <property name="text">
+                 <string>mm</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="casingLabel">
+              <property name="text">
+               <string>套管尺寸:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <layout class="QHBoxLayout" name="casingLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="casingSpin">
+                <property name="maximum">
+                 <double>800.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>177.800000000000011</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="casingUnitLabel">
+                <property name="text">
+                 <string>mm</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="completionLabel">
+              <property name="text">
+               <string>完井方式:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="completionCombo">
+              <item>
+               <property name="text">
+                <string>裸眼完井</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>套管完井</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>分段压裂完井</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>筛管完井</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>砾石充填</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="bhpGaugeLabel">
+              <property name="text">
+               <string>压力计深度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <layout class="QHBoxLayout" name="bhpGaugeLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="bhpGaugeSpin">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>2453.599999999999909</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bhpGaugeUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="wellParamsSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageFractureParams">
+        <layout class="QVBoxLayout" name="fractureParamsLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="fractureParamsHeader">
+           <property name="text">
+            <string>💥 多段压裂参数设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="fractureParamsGroup">
+           <property name="title">
+            <string>🎯 压裂设计参数</string>
+           </property>
+           <layout class="QGridLayout" name="fractureParamsGridLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="fractureStagesLabel">
+              <property name="text">
+               <string>压裂段数:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="fractureStagesSpin">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>50</number>
+              </property>
+              <property name="value">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="fractureSpacingLabel">
+              <property name="text">
+               <string>段间距:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <layout class="QHBoxLayout" name="fractureSpacingLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="fractureSpacingSpin">
+                <property name="maximum">
+                 <double>2000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>91.400000000000006</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="fractureSpacingUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="fractureHalfLengthLabel">
+              <property name="text">
+               <string>裂缝半长:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="fractureHalfLengthLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="fractureHalfLengthSpin">
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>61.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="fractureHalfLengthUnitLabel">
+                <property name="text">
+                 <string>m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="fractureConductivityLabel">
+              <property name="text">
+               <string>裂缝导流能力:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <layout class="QHBoxLayout" name="fractureConductivityLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="fractureConductivitySpin">
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>15.199999999999999</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="fractureConductivityUnitLabel">
+                <property name="text">
+                 <string>mD·m</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="fractureCalcLabel">
+           <property name="styleSheet">
+            <string notr="true">font-weight: bold; color: #0f172a;</string>
+           </property>
+           <property name="text">
+            <string>📊 压裂参数计算结果:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="fractureCalcFrame">
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="fractureCalcLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="totalFractureVolumeLabel">
+              <property name="text">
+               <string>总改造体积:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="totalFractureVolumeValue">
+              <property name="styleSheet">
+               <string notr="true">font-weight: bold; color: #0369a1;</string>
+              </property>
+              <property name="text">
+               <string>--</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="effectiveReservoirVolumeLabel">
+              <property name="text">
+               <string>有效储层体积:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="effectiveReservoirVolumeValue">
+              <property name="styleSheet">
+               <string notr="true">font-weight: bold; color: #0369a1;</string>
+              </property>
+              <property name="text">
+               <string>--</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="averageSpacingLabel">
+              <property name="text">
+               <string>平均段间距:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="averageSpacingValue">
+              <property name="styleSheet">
+               <string notr="true">font-weight: bold; color: #0369a1;</string>
+              </property>
+              <property name="text">
+               <string>--</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="totalFractureLengthLabel">
+              <property name="text">
+               <string>总裂缝长度:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="totalFractureLengthValue">
+              <property name="styleSheet">
+               <string notr="true">font-weight: bold; color: #0369a1;</string>
+              </property>
+              <property name="text">
+               <string>--</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="fractureParamsSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageReservoirParams">
+        <layout class="QVBoxLayout" name="reservoirParamsLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="reservoirHeader">
+           <property name="text">
+            <string>🏔️ 储层参数设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="reservoirTopLayout">
+           <item>
+            <widget class="QGroupBox" name="reservoirModelGroup">
+             <property name="title">
+              <string>🧩 储层模型</string>
+             </property>
+             <layout class="QGridLayout" name="reservoirModelLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="reservoirModelLabel">
+                <property name="text">
+                 <string>储层模型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="reservoirModelCombo">
+                <item>
+                 <property name="text">
+                  <string>均质模型</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>双重介质模型</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>分形介质模型</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>压裂井模型</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="reservoirPressureLabel">
+                <property name="text">
+                 <string>初始压力:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="reservoirPressureLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="reservoirPressureSpin">
+                  <property name="maximum">
+                   <double>200.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>34.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="reservoirPressureUnitLabel">
+                  <property name="text">
+                   <string>MPa</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="reservoirTempLabel">
+                <property name="text">
+                 <string>储层温度:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <layout class="QHBoxLayout" name="reservoirTempLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="reservoirTempSpin">
+                  <property name="maximum">
+                   <double>300.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>93.299999999999997</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="reservoirTempUnitLabel">
+                  <property name="text">
+                   <string>°C</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="porosityGroup">
+             <property name="title">
+              <string>🕳️ 孔隙度参数</string>
+             </property>
+             <layout class="QGridLayout" name="porosityLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="porosityLabel">
+                <property name="text">
+                 <string>总孔隙度:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QDoubleSpinBox" name="porositySpin">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="maximum">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.080000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="matrixPorosityLabel">
+                <property name="text">
+                 <string>基质孔隙度:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QDoubleSpinBox" name="matrixPorositySpin">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="maximum">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.060000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="fracturePorosityLabel">
+                <property name="text">
+                 <string>裂缝孔隙度:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="fracturePorositySpin">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="maximum">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.020000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="permeabilityLayout">
+           <item>
+            <widget class="QGroupBox" name="permeabilityGroup">
+             <property name="title">
+              <string>🌊 渗透率参数</string>
+             </property>
+             <layout class="QGridLayout" name="permeabilityGridLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="permeabilityLabel">
+                <property name="text">
+                 <string>总渗透率:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <layout class="QHBoxLayout" name="permeabilityHLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="permeabilitySpin">
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.001000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="permeabilityUnitLabel">
+                  <property name="text">
+                   <string>mD</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="matrixPermeabilityLabel">
+                <property name="text">
+                 <string>基质渗透率:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="matrixPermeabilityLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="matrixPermeabilitySpin">
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.000100000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="matrixPermeabilityUnitLabel">
+                  <property name="text">
+                   <string>mD</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="fracturePermeabilityLabel">
+                <property name="text">
+                 <string>裂缝渗透率:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <layout class="QHBoxLayout" name="fracturePermeabilityLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="fracturePermeabilitySpin">
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.100000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="fracturePermeabilityUnitLabel">
+                  <property name="text">
+                   <string>mD</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="compressibilityLabel">
+                <property name="text">
+                 <string>岩石压缩率:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <layout class="QHBoxLayout" name="compressibilityLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="compressibilitySpin">
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.000001000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.000145000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="compressibilityUnitLabel">
+                  <property name="text">
+                   <string>1/MPa</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="boundaryGroup">
+             <property name="title">
+              <string>🚧 边界条件</string>
+             </property>
+             <layout class="QGridLayout" name="boundaryLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="boundaryTypeLabel">
+                <property name="text">
+                 <string>边界类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="boundaryTypeCombo">
+                <item>
+                 <property name="text">
+                  <string>无限大储层</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>恒定压力边界</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>封闭边界</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>混合边界</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>断层边界</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="distanceToBoundaryLabel">
+                <property name="text">
+                 <string>边界距离:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="distanceToBoundaryLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="distanceToBoundarySpin">
+                  <property name="maximum">
+                   <double>20000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>609.600000000000023</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="distanceToBoundaryUnitLabel">
+                  <property name="text">
+                   <string>m</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="anisotropyLabel">
+                <property name="text">
+                 <string>各向异性比:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="anisotropySpin">
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="minimum">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>100.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="formationDipLabel">
+                <property name="text">
+                 <string>地层倾角:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <layout class="QHBoxLayout" name="formationDipLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="formationDipSpin">
+                  <property name="maximum">
+                   <double>90.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>5.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="formationDipUnitLabel">
+                  <property name="text">
+                   <string>度</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="reservoirParamsSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageFluidProperties">
+        <layout class="QVBoxLayout" name="fluidPropertiesLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="fluidHeader">
+           <property name="text">
+            <string>🛢️ 流体特性设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="fluidTypeGroup">
+           <property name="title">
+            <string>🧪 流体类型与相态</string>
+           </property>
+           <layout class="QGridLayout" name="fluidTypeLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="fluidSystemLabel">
+              <property name="text">
+               <string>流体系统:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="fluidSystemCombo">
+              <item>
+               <property name="text">
+                <string>单相流体</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>多相流体</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="referencePressureLabel">
+              <property name="text">
+               <string>参考压力:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <layout class="QHBoxLayout" name="referencePressureLayout">
+              <item>
+               <widget class="QDoubleSpinBox" name="referencePressureSpin">
+                <property name="maximum">
+                 <double>200.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>34.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="referencePressureUnitLabel">
+                <property name="text">
+                 <string>MPa</string>
+                </property>
+                <property name="labelClass" stdset="0">
+                 <string>unitLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0" colspan="4">
+             <widget class="QFrame" name="phaseFrame">
+              <property name="styleSheet">
+               <string notr="true">background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px;</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Shape::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Shadow::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="phaseLayout">
+               <item>
+                <widget class="QLabel" name="phaseLabel">
+                 <property name="styleSheet">
+                  <string notr="true">font-weight: bold; color: #92400e;</string>
+                 </property>
+                 <property name="text">
+                  <string>流体相:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="oilCheckBox">
+                 <property name="text">
+                  <string>油相</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="gasCheckBox">
+                 <property name="text">
+                  <string>气相 </string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="waterCheckBox">
+                 <property name="text">
+                  <string>水相</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="phaseSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="fluidPropertiesHLayout">
+           <item>
+            <widget class="QGroupBox" name="fluidPropertiesGroup">
+             <property name="title">
+              <string>⚗️ 流体物性参数</string>
+             </property>
+             <layout class="QGridLayout" name="fluidPropertiesGridLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="viscosityLabel">
+                <property name="text">
+                 <string>粘度:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <layout class="QHBoxLayout" name="viscosityLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="viscositySpin">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.800000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="viscosityUnitLabel">
+                  <property name="text">
+                   <string>mPa·s</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="fvfLabel">
+                <property name="text">
+                 <string>体积系数:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QHBoxLayout" name="fvfLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="fvfSpin">
+                  <property name="minimum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>3.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>1.300000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="fvfUnitLabel">
+                  <property name="text">
+                   <string>m³/m³</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="compressibilityFluidLabel">
+                <property name="text">
+                 <string>流体压缩系数:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <layout class="QHBoxLayout" name="compressibilityFluidLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="compressibilityFluidSpin">
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.000001000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.002900000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="compressibilityFluidUnitLabel">
+                  <property name="text">
+                   <string>1/MPa</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="totalCompressibilityGroup">
+             <property name="title">
+              <string>📊 综合压缩系数</string>
+             </property>
+             <layout class="QGridLayout" name="totalCompressibilityLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="totalCompressibilityLabel">
+                <property name="text">
+                 <string>总压缩系数:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <layout class="QHBoxLayout" name="totalCompressibilityHLayout">
+                <item>
+                 <widget class="QDoubleSpinBox" name="totalCompressibilitySpin">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background: #f0f9ff; font-weight: bold;</string>
+                  </property>
+                  <property name="decimals">
+                   <number>6</number>
+                  </property>
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.000001000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.003045000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="totalCompressibilityUnitLabel">
+                  <property name="text">
+                   <string>1/MPa</string>
+                  </property>
+                  <property name="labelClass" stdset="0">
+                   <string>unitLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QLabel" name="compressibilityNote">
+                <property name="styleSheet">
+                 <string notr="true">color: #64748b; font-size: 11px; font-style: italic;</string>
+                </property>
+                <property name="text">
+                 <string>💡 总压缩系数 = 岩石压缩系数 + 流体压缩系数</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="fluidPropertiesSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="pageAnalysisSettings">
+        <layout class="QVBoxLayout" name="analysisSettingsLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <property name="leftMargin">
+          <number>24</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>24</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="analysisSettingsHeader">
+           <property name="text">
+            <string>🔬 专业试井分析设置</string>
+           </property>
+           <property name="labelClass" stdset="0">
+            <string>sectionHeader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="analysisTypeGroup">
+           <property name="title">
+            <string>🎯 分析类型选择</string>
+           </property>
+           <layout class="QGridLayout" name="analysisTypeLayout">
+            <item row="0" column="0" colspan="4">
+             <layout class="QHBoxLayout" name="analysisTypeRadioLayout">
+              <item>
+               <widget class="QRadioButton" name="standardRadioButton">
+                <property name="toolTip">
+                 <string>适用于常规储层</string>
+                </property>
+                <property name="text">
+                 <string>🔵 标准分析</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="nonlinearRadioButton">
+                <property name="toolTip">
+                 <string>考虑复杂流体流动</string>
+                </property>
+                <property name="text">
+                 <string>🟡 非线性分析</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="multiLayerRadioButton">
+                <property name="toolTip">
+                 <string>多层储层解释</string>
+                </property>
+                <property name="text">
+                 <string>🟠 多层分析</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="fractureRadioButton">
+                <property name="toolTip">
+                 <string>专用于压裂水平井</string>
+                </property>
+                <property name="text">
+                 <string>🔴 压裂井分析</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="analysisTypeRadioSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="analysisModelLabel">
+              <property name="text">
+               <string>解释模型:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="analysisModelCombo">
+              <item>
+               <property name="text">
+                <string>经典均质模型</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>双重介质模型</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>分形介质模型</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>压裂井模型</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="flowRegimeLabel">
+              <property name="text">
+               <string>流动制式:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QComboBox" name="flowRegimeCombo">
+              <item>
+               <property name="text">
+                <string>径向流</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>线性流</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>双线性流</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>球状流</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>复合流动</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="methodLayout">
+           <item>
+            <widget class="QGroupBox" name="solutionMethodGroup">
+             <property name="title">
+              <string>⚙️ 求解方法</string>
+             </property>
+             <layout class="QGridLayout" name="solutionMethodLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="methodLabel">
+                <property name="text">
+                 <string>求解方法:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="methodCombo">
+                <item>
+                 <property name="text">
+                  <string>智能自动匹配</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>直接输入参数</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>手动拟合调整</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>混合求解方法</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="optimizationMethodLabel">
+                <property name="text">
+                 <string>优化算法:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="optimizationMethodCombo">
+                <item>
+                 <property name="text">
+                  <string>非线性最小二乘法</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>遗传算法优化</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>粒子群优化</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>模拟退火算法</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="dataProcessingGroup">
+             <property name="title">
+              <string>📈 数据处理</string>
+             </property>
+             <layout class="QGridLayout" name="dataProcessingLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="pressureDifferenceDefinitionLabel">
+                <property name="text">
+                 <string>压差定义:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="pressureDifferenceDefinitionCombo">
+                <item>
+                 <property name="text">
+                  <string>P-Pi (当前-初始)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Pi-P (初始-当前)</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="timeFormatLabel">
+                <property name="text">
+                 <string>时间格式:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="timeFormatCombo">
+                <item>
+                 <property name="text">
+                  <string>经过时间</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>实际时间</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>规范化时间</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="displayLayout">
+           <item>
+            <widget class="QGroupBox" name="graphOptionsGroup">
+             <property name="title">
+              <string>📊 图表设置</string>
+             </property>
+             <layout class="QGridLayout" name="graphOptionsLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="primaryPlotLabel">
+                <property name="text">
+                 <string>主图表类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="primaryPlotCombo">
+                <item>
+                 <property name="text">
+                  <string>双对数坐标系</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>半对数坐标系</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>笛卡尔坐标系</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>压力导数图</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="showGridCheckBox">
+                <property name="text">
+                 <string>显示网格</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="adjustScaleCheckBox">
+                <property name="text">
+                 <string>自动调整刻度</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="advancedSettingsGroup">
+             <property name="title">
+              <string>🚀 高级设置</string>
+             </property>
+             <layout class="QVBoxLayout" name="advancedSettingsLayout">
+              <item>
+               <widget class="QCheckBox" name="enableTransientFlowCheckBox">
+                <property name="text">
+                 <string>考虑瞬态流动效应</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="enableNonDarcyFlowCheckBox">
+                <property name="text">
+                 <string>考虑非达西流动</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="interferenceLayout"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="outputOptionsGroup">
+           <property name="title">
+            <string>📄 输出选项</string>
+           </property>
+           <layout class="QHBoxLayout" name="outputOptionsLayout">
+            <item>
+             <widget class="QCheckBox" name="generateReportCheckBox">
+              <property name="text">
+               <string>自动生成专业解释报告</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="saveParametersCheckBox">
+              <property name="text">
+               <string>保存解释参数到历史记录</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="exportDataCheckBox">
+              <property name="text">
+               <string>导出数据到Excel</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="outputOptionsSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="analysisSettingsSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="footerFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>70</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>70</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="footerLayout" stretch="1,0,0,0">
+      <property name="leftMargin">
+       <number>16</number>
+      </property>
+      <property name="topMargin">
+       <number>12</number>
+      </property>
+      <property name="rightMargin">
+       <number>16</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; color: #475569; font-size: 14px;</string>
+        </property>
+        <property name="text">
+         <string>请设置试井项目基本信息</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="backButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>&lt;&lt; 上一步</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/back_icon.png</normaloff>:/new/prefix1/Resource/back_icon.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="nextButton">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>下一步 &gt;&gt;</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/next_icon.png</normaloff>:/new/prefix1/Resource/next_icon.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cancelButton">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>取消</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/new/prefix1/Resource/cancel_icon.png</normaloff>:/new/prefix1/Resource/cancel_icon.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ModelWidget1</class>
+ <widget class="QWidget" name="ModelWidget1">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>802</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>多孔隙介质页岩油藏渗流模型</string>
+  </property>
+  <property name="styleSheet">
+   <string>QWidget { color: black; }</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="mainSplitter">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="leftPanel">
+      <property name="minimumSize">
+       <size>
+        <width>420</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>460</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <layout class="QVBoxLayout" name="leftLayout">
+       <item>
+        <widget class="QGroupBox" name="parameterGroup">
+         <property name="title">
+          <string>模型参数</string>
+         </property>
+         <layout class="QGridLayout" name="paramLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_omega">
+            <property name="text">
+             <string>储容比 (ω):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="omegaSpinBox">
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>0.001000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.999000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.001000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_s">
+            <property name="text">
+             <string>表皮因子 (S):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="sSpinBox">
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>50.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_cd">
+            <property name="text">
+             <string>井筒存储系数 (cD):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="cDSpinBox">
+            <property name="decimals">
+             <number>12</number>
+            </property>
+            <property name="minimum">
+             <double>0.000000000001000</double>
+            </property>
+            <property name="maximum">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000010000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_lambda">
+            <property name="text">
+             <string>窜流系数 (λ):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="lambdaSpinBox">
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>0.000001000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_mf">
+            <property name="text">
+             <string>裂缝条数 (mf):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="mfSpinBox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>3</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_nf">
+            <property name="text">
+             <string>离散段数 (nf):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="nfSpinBox">
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_xf">
+            <property name="text">
+             <string>裂缝长度 (Xf):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QDoubleSpinBox" name="xfSpinBox">
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>500.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>40.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_yy">
+            <property name="text">
+             <string>裂缝间距控制 (yy):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QDoubleSpinBox" name="yySpinBox">
+            <property name="minimum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>500.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>70.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_y">
+            <property name="text">
+             <string>水平井长度 (y):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QDoubleSpinBox" name="ySpinBox">
+            <property name="minimum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_n">
+            <property name="text">
+             <string>Stefest参数 (N):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QSpinBox" name="nSpinBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>18</number>
+            </property>
+            <property name="singleStep">
+             <number>2</number>
+            </property>
+            <property name="value">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="fittingGroup">
+         <property name="title">
+          <string>曲线拟合参数</string>
+         </property>
+         <layout class="QGridLayout" name="fittingLayout">
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="enableFittingCheckBox">
+            <property name="text">
+             <string>启用曲线拟合</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_original_points">
+            <property name="text">
+             <string>原始计算点数:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="originalPointsSpinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_fitting_points">
+            <property name="text">
+             <string>拟合显示点数:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="fittingPointsSpinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <double>50</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="controlGroup">
+         <property name="title">
+          <string>计算控制</string>
+         </property>
+         <layout class="QVBoxLayout" name="controlLayout">
+          <item>
+           <layout class="QHBoxLayout" name="buttonLayout1">
+            <item>
+             <widget class="QPushButton" name="calculateButton">
+              <property name="styleSheet">
+               <string>QPushButton { background-color: #4CAF50; color: white; font-weight: bold; padding: 8px; }</string>
+              </property>
+              <property name="text">
+               <string>开始计算</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="resetButton">
+              <property name="styleSheet">
+               <string>QPushButton { background-color: #2196F3; color: white; font-weight: bold; padding: 8px; }</string>
+              </property>
+              <property name="text">
+               <string>重置参数</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="buttonLayout2">
+            <item>
+             <widget class="QPushButton" name="exportButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string>QPushButton { background-color: #FF9800; color: white; font-weight: bold; padding: 8px; }</string>
+              </property>
+              <property name="text">
+               <string>导出结果</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="viewLayout">
+            <item>
+             <widget class="QPushButton" name="resetViewButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string>QPushButton { background-color: #9C27B0; color: white; font-weight: bold; padding: 6px; }</string>
+              </property>
+              <property name="text">
+               <string>重置视图</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="fitToDataButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string>QPushButton { background-color: #607D8B; color: white; font-weight: bold; padding: 6px; }</string>
+              </property>
+              <property name="text">
+               <string>适应数据</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar">
+            <property name="visible">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="displayGroup">
+         <property name="title">
+          <string>显示选项</string>
+         </property>
+         <layout class="QVBoxLayout" name="displayLayout">
+          <item>
+           <widget class="QCheckBox" name="showFittedCurveCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>显示拟合曲线</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showOriginalDataCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>显示原始计算点</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="styleSheet">
+       <string>QTabWidget { margin-top: -85px; }</string>
+      </property>
+      <widget class="QWidget" name="chartTab">
+       <attribute name="title">
+        <string>压力分析图表</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="resultTab">
+       <attribute name="title">
+        <string>计算结果</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="resultLayout">
+        <item>
+         <widget class="QTextEdit" name="resultTextEdit">
+          <property name="styleSheet">
+           <string>QTextEdit { color: black; background-color: white; }</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Microsoft YaHei UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;等待计算结果...&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;选择对应的模型类型，设置参数后点击'开始计算'按钮进行多孔隙介质页岩油藏渗流模型压力分析计算。&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="plainText">
+           <string>等待计算结果...
+
+选择对应的模型类型，设置参数后点击'开始计算'按钮进行多孔隙介质页岩油藏渗流模型压力分析计算。
+
+</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

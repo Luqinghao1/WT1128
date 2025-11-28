@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlottingWidget</class>
+ <widget class="QWidget" name="PlottingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>数据曲线分析</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 全局样式 - 采用红绿蓝配色方案 */
+QWidget {
+    background-color: #FAFAFA;
+    color: #212121;
+    font: 75 9pt "Microsoft YaHei";
+}
+
+/* 分组框样式 - 蓝色主题 */
+QGroupBox {
+    border: 2px solid #2196F3;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-weight: bold;
+    color: #1976D2;
+    background-color: white;
+    padding-top: 10px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 15px;
+    background-color: #2196F3;
+    color: white;
+    border-radius: 4px;
+    font-size: 10pt;
+}
+
+/* 按钮样式 - 蓝色主按钮 */
+QPushButton {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #42A5F5, stop: 1 #2196F3);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    color: white;
+    min-width: 80px;
+    min-height: 32px;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #64B5F6, stop: 1 #42A5F5);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #1976D2, stop: 1 #1565C0);
+}
+
+QPushButton:disabled {
+    background-color: #BDBDBD;
+    color: #757575;
+}
+
+/* 添加按钮 - 绿色 */
+QPushButton#pushButton_addCurve {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #66BB6A, stop: 1 #4CAF50);
+}
+
+QPushButton#pushButton_addCurve:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #81C784, stop: 1 #66BB6A);
+}
+
+QPushButton#pushButton_addCurve:pressed {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #388E3C, stop: 1 #2E7D32);
+}
+
+/* 删除按钮 - 红色 */
+QPushButton#pushButton_removeCurve {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #EF5350, stop: 1 #F44336);
+}
+
+QPushButton#pushButton_removeCurve:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #E57373, stop: 1 #EF5350);
+}
+
+QPushButton#pushButton_removeCurve:pressed {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #D32F2F, stop: 1 #C62828);
+}
+
+/* 颜色选择按钮 */
+QPushButton#pushButton_gridColor {
+    background: white;
+    border: 2px solid #2196F3;
+    color: #2196F3;
+}
+
+QPushButton#pushButton_gridColor:hover {
+    background: #E3F2FD;
+    border-color: #1976D2;
+}
+
+/* 输入框样式 */
+QComboBox, QSpinBox, QDoubleSpinBox, QLineEdit {
+    border: 2px solid #BBDEFB;
+    border-radius: 4px;
+    padding: 6px 10px;
+    background-color: white;
+    selection-background-color: #2196F3;
+    selection-color: white;
+    font-size: 9pt;
+    color: #212121;
+}
+
+QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus, QLineEdit:focus {
+    border-color: #2196F3;
+    background-color: #E3F2FD;
+}
+
+QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover, QLineEdit:hover {
+    border-color: #42A5F5;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 30px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #2196F3;
+    margin-right: 5px;
+}
+
+/* 复选框样式 */
+QCheckBox {
+    font-weight: bold;
+    color: #1976D2;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #2196F3;
+    border-radius: 4px;
+    background-color: white;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #2196F3;
+    image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiI+PHBhdGggZD0iTTEgNkw0LjUgOS41TDExIDMiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==);
+}
+
+QCheckBox::indicator:hover {
+    border-color: #42A5F5;
+}
+
+/* 文本编辑器样式 */
+QTextEdit {
+    border: 2px solid #BBDEFB;
+    border-radius: 6px;
+    background-color: white;
+    padding: 8px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 8pt;
+    color: #212121;
+}
+
+/* 进度条样式 */
+QProgressBar {
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    background-color: #E3F2FD;
+    text-align: center;
+    font-weight: bold;
+    color: #1976D2;
+    height: 24px;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                               stop: 0 #42A5F5, stop: 1 #2196F3);
+    border-radius: 4px;
+}
+
+/* 标签样式 */
+QLabel {
+    font-weight: bold;
+    color: #424242;
+}
+
+/* 分割器样式 */
+QSplitter::handle {
+    background-color: #BBDEFB;
+    width: 3px;
+    border-radius: 1px;
+}
+
+QSplitter::handle:hover {
+    background-color: #2196F3;
+}
+
+/* 列表控件样式 */
+QListWidget {
+    border: 2px solid #BBDEFB;
+    border-radius: 6px;
+    background-color: white;
+    selection-background-color: #2196F3;
+    selection-color: white;
+    color: #212121;
+    padding: 4px;
+}
+
+QListWidget::item {
+    padding: 6px 10px;
+    border-bottom: 1px solid #E3F2FD;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+QListWidget::item:selected {
+    background-color: #2196F3;
+    color: white;
+}
+
+QListWidget::item:hover {
+    background-color: #E3F2FD;
+    color: #1976D2;
+}
+
+/* 菜单样式 */
+QMenu {
+    background-color: white;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+QMenu::item {
+    padding: 8px 24px;
+    color: #212121;
+    border-radius: 4px;
+}
+
+QMenu::item:selected {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* 滚动条样式 */
+QScrollBar:vertical {
+    border: none;
+    background: #E3F2FD;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #2196F3;
+    border-radius: 6px;
+    min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1976D2;
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: #E3F2FD;
+    height: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #2196F3;
+    border-radius: 6px;
+    min-width: 30px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #1976D2;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>8</number>
+   </property>
+   <property name="topMargin">
+    <number>8</number>
+   </property>
+   <property name="rightMargin">
+    <number>8</number>
+   </property>
+   <property name="bottomMargin">
+    <number>8</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="splitter_main">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="widget_controls" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>280</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>320</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget#widget_controls {
+    background-color: white;
+    border-radius: 8px;
+}</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_controls">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>8</number>
+       </property>
+       <property name="topMargin">
+        <number>8</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+       <property name="bottomMargin">
+        <number>8</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_dataInfo">
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    padding: 10px;
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                               stop: 0 #E3F2FD, stop: 1 #BBDEFB);
+    color: #1565C0;
+    font-size: 9pt;
+    font-weight: bold;
+}</string>
+         </property>
+         <property name="text">
+          <string>📊 数据信息：未加载数据</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_plotting">
+         <property name="title">
+          <string>📈 绘图功能</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_plotting">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButton_addCurve">
+            <property name="text">
+             <string>➕ 自定义曲线</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_pressureProdData">
+            <property name="text">
+             <string>📊 压力产量数据</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_pressureDerivative">
+            <property name="text">
+             <string>📈 压力导数</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_editCurve">
+            <property name="text">
+             <string>✏️ 编辑曲线</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_removeCurve">
+            <property name="text">
+             <string>🗑️ 删除曲线</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListWidget" name="listWidget_curves">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>200</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_display">
+            <item>
+             <widget class="QCheckBox" name="checkBox_showGrid">
+              <property name="text">
+               <string>🔲 显示网格</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_showLegend">
+              <property name="text">
+               <string>📋 显示图例</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_gridColor">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>🎨 网格颜色</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_main">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_plot" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>600</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget#widget_plot {
+    background-color: white;
+    border: 3px solid #2196F3;
+    border-radius: 8px;
+}</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
