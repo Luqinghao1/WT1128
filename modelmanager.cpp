@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <cmath>
 #include <QtMath>
-#include <algorithm> // Added for std::max_element
+#include <algorithm>
 
 // ==================================================================================
 //  ModelManager 构造与初始化
@@ -245,6 +245,7 @@ ModelCurveData ModelManager::calculateModel1(const QMap<QString, double>& params
 
     QVector<double> dpVec, tdpVec;
     double cD = params.value("cD", 1e-8);
+    // 这里只使用 cD 对时间轴进行缩放，不改变 pd 的值，与 ModelWidget1 保持一致
     computePressureDerivative(tD, pd, cD, dpVec, tdpVec);
 
     return std::make_tuple(tD, pd, dpVec);
@@ -255,7 +256,6 @@ ModelCurveData ModelManager::calculateModel1(const QMap<QString, double>& params
 // ==================================================================================
 ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params)
 {
-    // 保持原有逻辑，但注意使用安全的 value() 方法
     int numPoints = 100;
     int N = (int)params.value("N", 4);
     double kpd = params.value("kpd", 0.04);
@@ -272,11 +272,12 @@ ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params
     for (int k = 0; k < numPoints; ++k) {
         for (int m = 1; m <= N; ++m) {
             double s = m * ln2 / tD[k];
-            double L = flaplace2(s, params);
+            double L = flaplace2(s, params); // flaplace2 已修改为不带 S/CD 修正
             pd[k] += stefestCoefficient(m, N) * ln2 * L / tD[k];
         }
     }
 
+    // 应力敏感修正 (ModelWidget2 特有逻辑)
     QVector<double> pd1(numPoints);
     for(int i=0; i<numPoints; ++i) {
         pd1[i] = -1.0 / kpd * log(1.0 - kpd * pd[i]);
@@ -294,7 +295,7 @@ ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params
 // ==================================================================================
 ModelCurveData ModelManager::calculateModel3(const QMap<QString, double>& params)
 {
-    // 目前回退到 Model1 接口，防止崩溃，等待完整实现
+    // 保持现状，调用 Model1 计算，确保不崩溃
     return calculateModel1(params);
 }
 
@@ -304,7 +305,6 @@ ModelCurveData ModelManager::calculateModel3(const QMap<QString, double>& params
 void ModelManager::computePressureDerivative(const QVector<double>& tD, const QVector<double>& pd,
                                              double cD, QVector<double>& dpd, QVector<double>& td_dpd)
 {
-    // 使用与 ModelWidget1 一致的更健壮的导数算法
     dpd.clear(); td_dpd.clear();
     if (tD.size() < 3) return;
 
@@ -364,10 +364,9 @@ void ModelManager::computePressureDerivative(const QVector<double>& tD, const QV
 }
 
 // ==================================================================================
-//  数学核心: 辅助函数与积分 (移植自 ModelWidget1)
+//  数学核心: 辅助函数与积分
 // ==================================================================================
 
-// 移植 ModelWidget1 的 8 点高斯积分，避免 0 点奇异性崩溃
 double ModelManager::gaussQuadrature(double XDkv, double YDkv, double yDij, double fz, double a, double b)
 {
     static const double points[] = {
@@ -398,14 +397,12 @@ double ModelManager::gaussQuadrature(double XDkv, double YDkv, double yDij, doub
 
 double ModelManager::integralBesselK0(double XDkv, double YDkv, double yDij, double fz, double a, double b)
 {
-    // 直接使用高斯积分，ModelWidget1 的实现更直接
     return gaussQuadrature(XDkv, YDkv, yDij, fz, a, b);
 }
 
-// 移植 ModelWidget1 的 BesselK0 实现，处理更稳健
 double ModelManager::besselK0(double x)
 {
-    if (x <= 0) return 1e10; // 避免 Inf
+    if (x <= 0) return 1e10;
     if (x <= 2.0) {
         double t = x / 2.0;
         double t2 = t * t;
@@ -423,13 +420,12 @@ double ModelManager::besselK0(double x)
 
 QVector<double> ModelManager::solveLinearSystem(const QVector<QVector<double>>& A, const QVector<double>& b)
 {
-    // 增加对空矩阵或尺寸不匹配的检查
     if(A.isEmpty() || b.isEmpty() || A.size() != b.size()) return QVector<double>();
 
     int n = b.size();
     QVector<QVector<double>> Ab(n);
     for (int i = 0; i < n; ++i) {
-        if(A[i].size() < n) return QVector<double>(); // 错误保护
+        if(A[i].size() < n) return QVector<double>();
         Ab[i] = A[i];
         Ab[i].append(b[i]);
     }
@@ -462,7 +458,6 @@ QVector<double> ModelManager::solveLinearSystem(const QVector<QVector<double>>& 
 
 double ModelManager::stefestCoefficient(int i, int N)
 {
-    // 移植 ModelWidget1 的实现
     double sum = 0.0;
     int start = (i + 1) / 2;
     int end = std::min(i, N / 2);
@@ -483,10 +478,9 @@ double ModelManager::factorial(int n) {
 }
 
 // ==================================================================================
-//  Model 1 专用函数 (修复 QMap 访问崩溃问题)
+//  Model 1 专用函数
 // ==================================================================================
 double ModelManager::flaplace1(double z, const QMap<QString, double>& p) {
-    // 使用 value() 替代 operator[]，防止崩溃和编译错误
     int mf = (int)p.value("mf", 3);
     int nf = (int)p.value("nf", 5);
     double omega = p.value("omega", 0.05);
@@ -494,8 +488,10 @@ double ModelManager::flaplace1(double z, const QMap<QString, double>& p) {
     double Xf = p.value("Xf", 40.0);
     double yy = p.value("yy", 70.0);
     double y = p.value("y", 1000.0);
-    double S = p.value("S", 0.1);
-    double cD = p.value("cD", 1e-8);
+
+    // 注意：在此处我们移除了 S 和 cD 的拉普拉斯变换应用，以匹配 ModelWidget1 的原始逻辑
+    // double S = p.value("S", 0.1);
+    // double cD = p.value("cD", 1e-8);
 
     if (mf <= 0 || nf <= 0) return 0.0;
 
@@ -517,14 +513,13 @@ double ModelManager::flaplace1(double z, const QMap<QString, double>& p) {
     F[sz] = 1.0/z;
 
     QVector<double> res = solveLinearSystem(E, F);
-    if (res.size() <= sz) return 0.0; // 求解失败保护
+    if (res.size() <= sz) return 0.0;
 
-    double pwd = z * res[sz] + S;
-    return pwd / (z * (1.0 + z * cD * pwd));
+    // 修改点：直接返回求解结果，不套用井筒储存和表皮公式，与 ModelWidget1 保持一致
+    return res[sz];
 }
 
 double ModelManager::flaplace2(double z, const QMap<QString, double>& p) {
-    // 安全读取参数
     int mf = (int)p.value("mf", 3);
     int nf = (int)p.value("nf", 5);
     double omega = p.value("omega", 0.0155);
@@ -532,9 +527,9 @@ double ModelManager::flaplace2(double z, const QMap<QString, double>& p) {
     double Xf = p.value("Xf", 193.0);
     double yy = p.value("yy", 295.0);
     double y = p.value("y", 2758.0);
-    double S = p.value("S", 0.81);
-    double cD = p.value("cD", 8.08e-8);
     double CFD = p.value("CFD", 0.9);
+    // double S = p.value("S", 0.81);
+    // double cD = p.value("cD", 8.08e-8);
 
     if(mf<=0 || nf<=0) return 0.0;
 
@@ -570,13 +565,13 @@ double ModelManager::flaplace2(double z, const QMap<QString, double>& p) {
     F[sz+mf] = 1.0/z;
     QVector<double> res = solveLinearSystem(I, F);
     if(res.size() <= sz+mf) return 0.0;
-    double pd1 = res[sz+mf];
-    return (z * pd1 + S) / (z + z*z*cD * (z * pd1 + S));
+
+    // 修改点：直接返回结果，移除 CD/S 修正，与 ModelWidget 保持一致
+    return res[sz+mf];
 }
 
 double ModelManager::e_function(double z, int i, int j, int k, int v, int mf, int nf, double omega, double lambda, double Xf, double yy, double y)
 {
-    // 逻辑与 ModelWidget1 保持一致
     double fz = (z * (omega * z * (1 - omega) + lambda)) / (lambda + (1 - omega) * z);
     double xij = (j - nf - 1) / (double)nf * Xf;
     double xDij = xij / y;

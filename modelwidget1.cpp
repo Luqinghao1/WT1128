@@ -7,10 +7,10 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QDateTime>
-#include <QCoreApplication> // 用于 processEvents
+#include <QCoreApplication>
 
 // =========================================================
-// LogLogChartWidget 实现 (保持不变)
+// LogLogChartWidget 实现 (已修正缩放逻辑)
 // =========================================================
 
 LogLogChartWidget::LogLogChartWidget(QWidget *parent)
@@ -83,8 +83,11 @@ void LogLogChartWidget::mouseMoveEvent(QMouseEvent *event) {
         QRect plotRect = rect().adjusted(80, 50, -50, -80);
         double logXRange = log10(m_xMax) - log10(m_xMin);
         double logYRange = log10(m_yMax) - log10(m_yMin);
+
+        // 平移计算
         double deltaLogX = -delta.x() * logXRange / plotRect.width();
         double deltaLogY = delta.y() * logYRange / plotRect.height();
+
         m_xMin *= pow(10.0, deltaLogX); m_xMax *= pow(10.0, deltaLogX);
         m_yMin *= pow(10.0, deltaLogY); m_yMax *= pow(10.0, deltaLogY);
         update();
@@ -97,10 +100,35 @@ void LogLogChartWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
+// 修正后的滚轮事件：实现中心缩放而非平移
 void LogLogChartWidget::wheelEvent(QWheelEvent *event) {
-    double factor = (event->angleDelta().y() > 0) ? 1.15 : 1.0/1.15;
-    m_xMin *= (1.0/factor); m_xMax *= (1.0/factor);
-    m_yMin *= (1.0/factor); m_yMax *= (1.0/factor);
+    // 缩放因子：正向滚动缩小范围（放大），负向滚动扩大范围（缩小）
+    double factor = (event->angleDelta().y() > 0) ? 0.9 : 1.1;
+
+    // 1. 处理 X 轴
+    double logXMin = log10(m_xMin);
+    double logXMax = log10(m_xMax);
+    double logXCenter = (logXMin + logXMax) / 2.0; // 当前视图对数中心
+    double logXHalfSpan = (logXMax - logXMin) / 2.0; // 当前视图对数半径
+
+    // 缩放半径
+    logXHalfSpan *= factor;
+
+    // 重建边界
+    m_xMin = pow(10.0, logXCenter - logXHalfSpan);
+    m_xMax = pow(10.0, logXCenter + logXHalfSpan);
+
+    // 2. 处理 Y 轴 (同理)
+    double logYMin = log10(m_yMin);
+    double logYMax = log10(m_yMax);
+    double logYCenter = (logYMin + logYMax) / 2.0;
+    double logYHalfSpan = (logYMax - logYMin) / 2.0;
+
+    logYHalfSpan *= factor;
+
+    m_yMin = pow(10.0, logYCenter - logYHalfSpan);
+    m_yMax = pow(10.0, logYCenter + logYHalfSpan);
+
     update();
 }
 
@@ -186,11 +214,11 @@ void LogLogChartWidget::drawLegend(QPainter& painter, const QRect& plotRect) {
     painter.setFont(QFont("Arial", 10));
     int x = plotRect.right()-100, y = plotRect.top()+20;
     painter.setPen(QPen(Qt::red, 2)); painter.drawLine(x, y, x+20, y);
-    painter.setPen(Qt::black); painter.drawText(x+25, y+5, "PD");
+    painter.setPen(Qt::black); painter.drawText(x+25, y+5, "压力");
     if (!m_yData2.isEmpty()) {
         y += 20;
         painter.setPen(QPen(Qt::blue, 2)); painter.drawLine(x, y, x+20, y);
-        painter.setPen(Qt::black); painter.drawText(x+25, y+5, "dPD");
+        painter.setPen(Qt::black); painter.drawText(x+25, y+5, "压力导数");
     }
 }
 
@@ -246,7 +274,6 @@ void ModelWidget1::onCalculateClicked() {
     ui->calculateButton->setEnabled(false);
     ui->calculateButton->setText("计算中...");
 
-    // 强制刷新一次界面
     QCoreApplication::processEvents();
 
     runCalculation();
@@ -286,7 +313,6 @@ void ModelWidget1::runCalculation() {
 
     // 主循环：计算压力
     for (int k = 0; k < steps; ++k) {
-        // 防止卡死：每处理一个时间点刷新一次界面
         if (k % 2 == 0) QCoreApplication::processEvents();
 
         double pd_val = 0.0;
@@ -302,7 +328,7 @@ void ModelWidget1::runCalculation() {
         res_pD[k] = pd_val;
     }
 
-    // 计算压力导数 (MATLAB: td=tD/cD; dpd=td(2:end).*diff(pd)./diff(td))
+    // 计算压力导数
     QVector<double> plot_tD_CD;
     for(double val : res_tD) plot_tD_CD.append(val / cD);
 
@@ -333,9 +359,11 @@ void ModelWidget1::runCalculation() {
     emit calculationCompleted("MFHW_DualPorosity", rMap);
 }
 
-double ModelWidget1::flaplace(double z, double cD, double S, int mf, int nf,
+double ModelWidget1::flaplace(double z, double, double, int mf, int nf,
                               double omega, double lambda, double Xf, double yy, double y, int)
 {
+    // 注意：这里的 cD 和 S (参数2和3) 并没有被使用，这是导致与 ModelManager 差异的根源
+    // ModelManager 必须与此逻辑对齐
     int size = mf * 2 * nf;
     QVector<QVector<double>> E(size + 1, QVector<double>(size + 1));
     QVector<double> F(size + 1, 0.0);
@@ -405,10 +433,7 @@ double ModelWidget1::adaptiveGauss(std::function<double(double)> f, double a, do
     double v1 = gauss15(f, a, b);
     double v2 = gauss15(f, a, c) + gauss15(f, c, b);
 
-    // 如果达到最大深度，直接返回细分结果，防止卡死
     if (depth >= maxDepth) return v2;
-
-    // 稍微放宽容差以提高速度 (1e-6 工程上足够)
     if (std::abs(v1 - v2) < 1e-10 * std::abs(v2) + eps) return v2;
 
     return adaptiveGauss(f, a, c, eps/2, depth+1, maxDepth) + adaptiveGauss(f, c, b, eps/2, depth+1, maxDepth);
@@ -424,25 +449,19 @@ double ModelWidget1::integral_bessel(double XDkv, double YDkv, double yDij, doub
         return besselK0(arg);
     };
 
-    // 性能优化：远场判断
-    // 如果场点到源线段中心的距离远大于线段长度的一半，则认为在远场，直接积分不递归
     double segmentLen = b - a;
     double distToCenter = sqrt(pow(XDkv - (a+b)/2.0, 2) + dist_y_sq);
 
     if (distToCenter > 2.0 * segmentLen) {
-        // 远场：使用高阶高斯积分 (30点)
         return gauss15(func, a, (a+b)/2.0) + gauss15(func, (a+b)/2.0, b);
     }
 
-    // 奇异性处理：源和场重合/极近
     if (dist_y_sq < 1e-16) {
         if (XDkv > a + 1e-9 && XDkv < b - 1e-9) {
-            // 奇异点在内部：拆分 + 限制深度(12层足够)
             return adaptiveGauss(func, a, XDkv, 1e-7, 0, 12) + adaptiveGauss(func, XDkv, b, 1e-7, 0, 12);
         }
     }
 
-    // 近场非奇异：限制深度
     return adaptiveGauss(func, a, b, 1e-7, 0, 12);
 }
 

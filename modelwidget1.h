@@ -14,7 +14,7 @@ class ModelWidget1;
 }
 
 // =========================================================
-// LogLogChartWidget: 绘图组件 (保持不变)
+// LogLogChartWidget: 绘图组件
 // =========================================================
 class LogLogChartWidget : public QWidget
 {
@@ -57,7 +57,7 @@ private:
 };
 
 // =========================================================
-// ModelWidget1: 数学核心修正版
+// ModelWidget1: 数学核心
 // =========================================================
 class ModelWidget1 : public QWidget
 {
@@ -80,20 +80,16 @@ signals:
 private:
     void runCalculation();
 
-    // 对应 MATLAB 的核心数学函数
     double flaplace(double s, double cD, double S, int mf, int nf,
                     double omega, double lambda, double Xf, double yy, double y, int N);
 
-    // 辅助函数
     double getStefestVi(int i, int N);
     double factorial(int n);
     double besselK0(double x);
     QVector<double> gaussElimination(QVector<QVector<double>> A, QVector<double> b);
 
-    // 改进的高精度积分函数
     double integral_bessel(double XDkv, double YDkv, double yDij, double fz, double a, double b);
 
-    // 增加 maxDepth 参数防止无限递归
     double adaptiveGauss(std::function<double(double)> f, double a, double b, double eps, int depth, int maxDepth);
     double gauss15(std::function<double(double)> f, double a, double b);
 
