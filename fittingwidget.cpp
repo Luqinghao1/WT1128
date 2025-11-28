@@ -15,7 +15,6 @@
 #include <QGroupBox>
 #include <QHeaderView>
 
-
 // ===========================================================================
 // FittingDataLoadDialog 实现
 // ===========================================================================
@@ -91,7 +90,13 @@ int FittingDataLoadDialog::getSkipRows() const { return m_comboSkipRows->current
 FittingWidget::FittingWidget(QWidget *parent) : QWidget(parent), ui(new Ui::FittingWidget), m_modelManager(nullptr), m_isFitting(false)
 {
     ui->setupUi(this);
-    // ... UI setup (same as before) ...
+
+    // 隐藏优化算法选择框，因为现在只使用一种改进的算法
+    if(ui->comboAlgorithm) {
+        ui->comboAlgorithm->setVisible(false);
+        // 如果有对应的标签也建议隐藏，或者将界面改为显示 "算法: Levenberg-Marquardt"
+    }
+
     this->setStyleSheet("QWidget { color: black; font-family: Arial; } "
                         "QGroupBox { font-weight: bold; border: 1px solid gray; margin-top: 10px; } "
                         "QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
@@ -125,7 +130,6 @@ void FittingWidget::initModelCombo() {
 }
 
 void FittingWidget::setupPlot() {
-    // ... (Same as before) ...
     m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     m_plot->setBackground(Qt::white);
     m_plot->xAxis->setScaleType(QCPAxis::stLogarithmic);
@@ -154,7 +158,6 @@ void FittingWidget::setupPlot() {
 }
 
 void FittingWidget::setObservedData(const QVector<double>& t, const QVector<double>& p, const QVector<double>& d) {
-    // ... (Same as before) ...
     m_obsTime = t; m_obsPressure = p; m_obsDerivative = d;
     QVector<double> vt, vp, vd;
     for(int i=0; i<t.size(); ++i) {
@@ -174,7 +177,6 @@ void FittingWidget::setObservedData(const QVector<double>& t, const QVector<doub
 void FittingWidget::on_comboModelSelect_currentIndexChanged(int) { on_btnResetParams_clicked(); }
 
 QString FittingWidget::getParamDisplayName(const QString& key) {
-    // ... (Same as before) ...
     if (key == "omega") return "储容比 (ω)";
     if (key == "omega1") return "内区储容比 (ω1)";
     if (key == "omega2") return "外区储容比 (ω2)";
@@ -241,7 +243,6 @@ void FittingWidget::on_btnResetParams_clicked() {
 }
 
 void FittingWidget::loadParamsToTable() {
-    // ... (Same as before) ...
     ui->tableParams->setRowCount(0);
     ui->tableParams->blockSignals(true);
 
@@ -267,7 +268,6 @@ void FittingWidget::loadParamsToTable() {
 }
 
 void FittingWidget::updateParamsFromTable() {
-    // ... (Same as before) ...
     for(int i=0; i<ui->tableParams->rowCount(); ++i) {
         if(i < m_parameters.size()) {
             QString key = ui->tableParams->item(i,0)->data(Qt::UserRole).toString();
@@ -283,7 +283,6 @@ void FittingWidget::updateParamsFromTable() {
 QStringList FittingWidget::parseLine(const QString& line) { return line.split(QRegularExpression("[,\\s\\t]+"), Qt::SkipEmptyParts); }
 
 void FittingWidget::on_btnLoadData_clicked() {
-    // ... (Same as before) ...
     QString path = QFileDialog::getOpenFileName(this, "加载试井数据", "", "文本文件 (*.txt *.csv)");
     if(path.isEmpty()) return;
     QFile f(path); if(!f.open(QIODevice::ReadOnly)) return;
@@ -337,24 +336,20 @@ void FittingWidget::on_btnRunFit_clicked() {
     m_stopRequested = false;
     ui->btnRunFit->setEnabled(false);
 
-    int algIndex = ui->comboAlgorithm->currentIndex();
+    // 移除算法选择逻辑，直接使用改进后的 LM 算法
     ModelManager::ModelType modelType = (ModelManager::ModelType)ui->comboModelSelect->currentIndex();
 
-    // [CRITICAL FIX] 制作参数副本传递给子线程，避免多线程同时访问 m_parameters 导致崩溃
     QList<FitParameter> paramsCopy = m_parameters;
 
-    (void)QtConcurrent::run([this, algIndex, modelType, paramsCopy](){
+    (void)QtConcurrent::run([this, modelType, paramsCopy](){
         // 参数副本传入
-        runOptimizationTask(algIndex, modelType, paramsCopy);
+        runOptimizationTask(modelType, paramsCopy);
     });
 }
 
-void FittingWidget::runOptimizationTask(int algIndex, ModelManager::ModelType modelType, QList<FitParameter> fitParams) {
-    if (algIndex == 0) {
-        runLevenbergMarquardtOptimization(modelType, fitParams);
-    } else {
-        runNelderMeadOptimization(modelType, fitParams);
-    }
+void FittingWidget::runOptimizationTask(ModelManager::ModelType modelType, QList<FitParameter> fitParams) {
+    // 统一调用改进后的 Levenberg-Marquardt
+    runLevenbergMarquardtOptimization(modelType, fitParams);
 }
 
 void FittingWidget::on_btnStop_clicked() { m_stopRequested=true; }
@@ -367,10 +362,9 @@ void FittingWidget::on_btnUpdateModel_clicked() {
 }
 
 // ===========================================================================
-// 优化算法 1: Levenberg-Marquardt (LM)
+// 改进的 Levenberg-Marquardt 优化算法 (模仿 lsqcurvefit)
 // ===========================================================================
 void FittingWidget::runLevenbergMarquardtOptimization(ModelManager::ModelType modelType, QList<FitParameter> params) {
-    // 整个函数内部使用局部变量 params，不触碰 m_parameters
     QVector<int> fitIndices;
     for(int i=0; i<params.size(); ++i) {
         if(params[i].isFit) fitIndices.append(i);
@@ -379,183 +373,123 @@ void FittingWidget::runLevenbergMarquardtOptimization(ModelManager::ModelType mo
     int nParams = fitIndices.size();
     if(nParams == 0) { QMetaObject::invokeMethod(this, "onFitFinished"); return; }
 
-    double lambda = 0.01;
-    double lambdaFactor = 10.0;
-    int maxIter = 100;
+    // 初始化参数
+    double lambda = 0.01;      // 初始阻尼因子
+    double lambdaUp = 10.0;    // 阻尼增加倍数
+    double lambdaDown = 0.1;   // 阻尼减少倍数
+    int maxIter = 100;         // 最大迭代次数
+    double epsilon = 1e-6;     // 收敛阈值
 
+    // 初始状态
     QMap<QString, double> currentParamMap;
     for(const auto& p : params) currentParamMap.insert(p.name, p.value);
 
     QVector<double> residuals = calculateResiduals(currentParamMap, modelType);
     double currentSSE = calculateSumSquaredError(residuals);
 
-    emit sigIterationUpdated(currentSSE / (residuals.isEmpty()?1:residuals.size()), currentParamMap);
+    // 发送初始进度
+    emit sigIterationUpdated(currentSSE / (residuals.isEmpty() ? 1 : residuals.size()), currentParamMap);
+
+    bool updateJ = true; // 标记是否需要更新雅可比矩阵
+    QVector<QVector<double>> J;
+    QVector<QVector<double>> H;
+    QVector<double> g;
 
     for(int iter = 0; iter < maxIter; ++iter) {
         if(m_stopRequested) break;
         emit sigProgress(iter * 100 / maxIter);
 
-        // 使用 params
-        QVector<QVector<double>> J = computeJacobian(currentParamMap, residuals, fitIndices, modelType, params);
         int nResiduals = residuals.size();
         if(nResiduals == 0) break;
 
-        // ... (Hessian 计算保持不变) ...
-        QVector<QVector<double>> Hessian(nParams, QVector<double>(nParams, 0.0));
-        QVector<double> gradient(nParams, 0.0);
+        // 1. 计算雅可比矩阵 J, Hessian 近似 H = J^T * J, 梯度 g = J^T * r
+        if (updateJ) {
+            J = computeJacobian(currentParamMap, residuals, fitIndices, modelType, params);
+            H = QVector<QVector<double>>(nParams, QVector<double>(nParams, 0.0));
+            g = QVector<double>(nParams, 0.0);
 
-        for(int k = 0; k < nResiduals; ++k) {
-            double r_k = residuals[k];
-            for(int i = 0; i < nParams; ++i) {
-                double J_ki = J[k][i];
-                gradient[i] += J_ki * r_k;
-                for(int j = 0; j <= i; ++j) {
-                    Hessian[i][j] += J_ki * J[k][j];
-                }
-            }
-        }
-        for(int i = 0; i < nParams; ++i) {
-            for(int j = i + 1; j < nParams; ++j) Hessian[i][j] = Hessian[j][i];
-        }
-
-        bool stepAccepted = false;
-        for(int innerLoop = 0; innerLoop < 5; ++innerLoop) {
-            QVector<QVector<double>> A = Hessian;
-            for(int i = 0; i < nParams; ++i) {
-                A[i][i] *= (1.0 + lambda);
-            }
-
-            QVector<double> negGradient(nParams);
-            for(int i=0; i<nParams; ++i) negGradient[i] = -gradient[i];
-
-            QVector<double> delta = solveLinearSystem(A, negGradient);
-
-            QMap<QString, double> trialParamMap = currentParamMap;
-            for(int i = 0; i < nParams; ++i) {
-                int paramIdx = fitIndices[i];
-                // 使用 params (本地副本) 进行边界检查
-                double newVal = params[paramIdx].value + delta[i];
-                if(newVal < params[paramIdx].min) newVal = params[paramIdx].min;
-                if(newVal > params[paramIdx].max) newVal = params[paramIdx].max;
-                trialParamMap[params[paramIdx].name] = newVal;
-            }
-
-            QVector<double> newResiduals = calculateResiduals(trialParamMap, modelType);
-            double newSSE = calculateSumSquaredError(newResiduals);
-
-            if(newSSE < currentSSE) {
-                lambda /= lambdaFactor;
-                currentSSE = newSSE;
-                residuals = newResiduals;
-                currentParamMap = trialParamMap;
-                // 更新本地 params，以便下一次迭代计算 Jacobian 时使用最新值（虽雅可比计算基于 Map，但为了一致性）
+            for(int k = 0; k < nResiduals; ++k) {
+                double r_k = residuals[k];
                 for(int i = 0; i < nParams; ++i) {
-                    params[fitIndices[i]].value = currentParamMap[params[fitIndices[i]].name];
+                    double J_ki = J[k][i];
+                    g[i] += J_ki * r_k; // g = J^T * r
+                    for(int j = 0; j <= i; ++j) {
+                        H[i][j] += J_ki * J[k][j];
+                    }
                 }
-                stepAccepted = true;
-                emit sigIterationUpdated(currentSSE / nResiduals, currentParamMap);
-                break;
-            } else {
-                lambda *= lambdaFactor;
+            }
+            // 对称化 H
+            for(int i = 0; i < nParams; ++i) {
+                for(int j = i + 1; j < nParams; ++j) H[i][j] = H[j][i];
             }
         }
 
-        if(!stepAccepted && lambda > 1e6) break;
-        if(currentSSE < 1e-8) break;
-    }
-    // 拟合结束后，主线程的 onFitFinished 可以选择是否同步 m_parameters，这里主要依靠 sigIterationUpdated 实时更新 UI
-    QMetaObject::invokeMethod(this, "onFitFinished");
-}
-
-// ===========================================================================
-// 优化算法 2: Nelder-Mead (单纯形法)
-// ===========================================================================
-void FittingWidget::runNelderMeadOptimization(ModelManager::ModelType modelType, QList<FitParameter> params) {
-    QVector<int> fitIndices;
-    for(int i=0; i<params.size(); ++i) if(params[i].isFit) fitIndices.append(i);
-    int n = fitIndices.size();
-    if(n == 0) { QMetaObject::invokeMethod(this, "onFitFinished"); return; }
-
-    double alpha = 1.0, beta = 0.5, gamma = 2.0;
-    QVector<QVector<double>> simplex(n + 1);
-    QVector<double> errors(n + 1);
-
-    simplex[0].resize(n);
-    for(int i=0; i<n; ++i) simplex[0][i] = params[fitIndices[i]].value;
-
-    for(int i=1; i<=n; ++i) {
-        simplex[i] = simplex[0];
-        double val = simplex[i][i-1];
-        simplex[i][i-1] = (std::abs(val) < 1e-9) ? 0.001 : val * 1.1;
-    }
-
-    auto getMap = [&](const QVector<double>& pVals) {
-        QMap<QString,double> map;
-        for(auto& p : params) map[p.name] = p.value;
-        for(int k=0; k<n; ++k) map[params[fitIndices[k]].name] = pVals[k];
-        return map;
-    };
-
-    for(int i=0; i<=n; ++i) {
-        if(m_stopRequested) break;
-        errors[i] = calculateError(getMap(simplex[i]), modelType);
-    }
-
-    int maxIter = 200;
-    for(int iter=0; iter<maxIter; ++iter) {
-        if(m_stopRequested) break;
-
-        QVector<int> idx(n+1); std::iota(idx.begin(), idx.end(), 0);
-        std::sort(idx.begin(), idx.end(), [&](int a, int b){ return errors[a] < errors[b]; });
-        int best = idx[0], worst = idx[n], secondWorst = idx[n-1];
-
-        emit sigIterationUpdated(errors[best], getMap(simplex[best]));
-        emit sigProgress(iter * 100 / maxIter);
-
-        QVector<double> centroid(n, 0.0);
-        for(int i=0; i<n; ++i) {
-            int ii = idx[i];
-            for(int j=0; j<n; ++j) centroid[j] += simplex[ii][j];
+        // 2. 应用阻尼因子 (Marquardt)
+        // 求解 (H + lambda * I) * delta = -g
+        QVector<QVector<double>> H_aug = H;
+        for(int i = 0; i < nParams; ++i) {
+            // 使用 Marquardt 缩放: H[i][i] * (1 + lambda) 或 H[i][i] + lambda
+            // MATLAB 风格通常使用对角线缩放
+            if (std::abs(H_aug[i][i]) > 1e-9)
+                H_aug[i][i] *= (1.0 + lambda);
+            else
+                H_aug[i][i] += lambda;
         }
-        for(int j=0; j<n; ++j) centroid[j] /= n;
 
-        QVector<double> xr(n);
-        for(int j=0; j<n; ++j) xr[j] = centroid[j] + alpha * (centroid[j] - simplex[worst][j]);
-        double errR = calculateError(getMap(xr), modelType);
+        QVector<double> negGradient(nParams);
+        for(int i=0; i<nParams; ++i) negGradient[i] = -g[i];
 
-        if(errR < errors[secondWorst] && errR >= errors[best]) {
-            simplex[worst] = xr; errors[worst] = errR;
-        } else if(errR < errors[best]) {
-            QVector<double> xe(n);
-            for(int j=0; j<n; ++j) xe[j] = centroid[j] + gamma * (xr[j] - centroid[j]);
-            double errE = calculateError(getMap(xe), modelType);
-            if(errE < errR) { simplex[worst] = xe; errors[worst] = errE; }
-            else { simplex[worst] = xr; errors[worst] = errR; }
+        QVector<double> delta = solveLinearSystem(H_aug, negGradient);
+
+        // 3. 计算新参数 (带边界投影)
+        QMap<QString, double> trialParamMap = currentParamMap;
+        bool changed = false;
+
+        for(int i = 0; i < nParams; ++i) {
+            int paramIdx = fitIndices[i];
+            double oldVal = params[paramIdx].value;
+            double newVal = oldVal + delta[i];
+
+            // 边界约束 (Projection)
+            if(newVal < params[paramIdx].min) newVal = params[paramIdx].min;
+            if(newVal > params[paramIdx].max) newVal = params[paramIdx].max;
+
+            trialParamMap[params[paramIdx].name] = newVal;
+        }
+
+        // 4. 评估新位置
+        QVector<double> newResiduals = calculateResiduals(trialParamMap, modelType);
+        double newSSE = calculateSumSquaredError(newResiduals);
+
+        // 5. 接受或拒绝步骤
+        if(newSSE < currentSSE) {
+            // 成功：减少阻尼，移动到新点
+            lambda *= lambdaDown;
+            currentSSE = newSSE;
+            residuals = newResiduals;
+            currentParamMap = trialParamMap;
+
+            // 更新本地 params 副本值
+            for(int i = 0; i < nParams; ++i) {
+                params[fitIndices[i]].value = currentParamMap[params[fitIndices[i]].name];
+            }
+
+            updateJ = true; // 下次迭代需要重新计算 J
+
+            emit sigIterationUpdated(currentSSE / nResiduals, currentParamMap);
+
+            // 检查收敛 (误差变化极小 或 梯度极小)
+            if (std::abs(currentSSE - newSSE) < epsilon) break;
         } else {
-            QVector<double> xc(n); bool accepted = false;
-            if(errR < errors[worst]) {
-                for(int j=0; j<n; ++j) xc[j] = centroid[j] + beta * (xr[j] - centroid[j]);
-                double errC = calculateError(getMap(xc), modelType);
-                if(errC <= errR) { simplex[worst] = xc; errors[worst] = errC; accepted = true;}
-            } else {
-                for(int j=0; j<n; ++j) xc[j] = centroid[j] - beta * (centroid[j] - simplex[worst][j]);
-                double errC = calculateError(getMap(xc), modelType);
-                if(errC < errors[worst]) { simplex[worst] = xc; errors[worst] = errC; accepted = true;}
-            }
-            if(!accepted) {
-                for(int i=1; i<=n; ++i) {
-                    int ii = idx[i];
-                    for(int j=0; j<n; ++j) simplex[ii][j] = simplex[best][j] + 0.5 * (simplex[ii][j] - simplex[best][j]);
-                    errors[ii] = calculateError(getMap(simplex[ii]), modelType);
-                }
-            }
+            // 失败：增加阻尼，不移动
+            lambda *= lambdaUp;
+            updateJ = false; // J 和 H 保持不变，只改变 lambda 重新求解
         }
-        // 更新 params 本地副本
-        QMap<QString,double> bestMap = getMap(simplex[best]);
-        for(int i=0; i<params.size(); ++i) {
-            if(bestMap.contains(params[i].name)) params[i].value = bestMap[params[i].name];
-        }
+
+        // 防止 lambda 过大溢出
+        if (lambda > 1e9) break;
     }
+
     QMetaObject::invokeMethod(this, "onFitFinished");
 }
 
@@ -634,8 +568,6 @@ QVector<QVector<double>> FittingWidget::computeJacobian(const QMap<QString, doub
     }
     return J;
 }
-
-// ... (solveLinearSystem, calculateError, onIterationUpdate, onFitFinished, plotCurves 保持不变) ...
 
 QVector<double> FittingWidget::solveLinearSystem(const QVector<QVector<double>>& A, const QVector<double>& b) {
     int n = b.size();

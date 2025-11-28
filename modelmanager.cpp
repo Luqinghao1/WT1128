@@ -2,6 +2,7 @@
 #include "modelwidget1.h"
 #include "modelwidget2.h"
 #include "modelwidget3.h"
+#include "PressureDerivativeCalculator.h" // 引入统一的导数计算器
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -245,7 +246,7 @@ ModelCurveData ModelManager::calculateModel1(const QMap<QString, double>& params
 
     QVector<double> dpVec, tdpVec;
     double cD = params.value("cD", 1e-8);
-    // 这里只使用 cD 对时间轴进行缩放，不改变 pd 的值，与 ModelWidget1 保持一致
+    // 使用统一的 PressureDerivativeCalculator 计算导数
     computePressureDerivative(tD, pd, cD, dpVec, tdpVec);
 
     return std::make_tuple(tD, pd, dpVec);
@@ -272,7 +273,7 @@ ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params
     for (int k = 0; k < numPoints; ++k) {
         for (int m = 1; m <= N; ++m) {
             double s = m * ln2 / tD[k];
-            double L = flaplace2(s, params); // flaplace2 已修改为不带 S/CD 修正
+            double L = flaplace2(s, params);
             pd[k] += stefestCoefficient(m, N) * ln2 * L / tD[k];
         }
     }
@@ -285,6 +286,7 @@ ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params
 
     QVector<double> dpVec, tdpVec;
     double cD = params.value("cD", 1e-8);
+    // 使用统一的 PressureDerivativeCalculator 计算导数
     computePressureDerivative(tD, pd1, cD, dpVec, tdpVec);
 
     return std::make_tuple(tD, pd1, dpVec);
@@ -295,72 +297,54 @@ ModelCurveData ModelManager::calculateModel2(const QMap<QString, double>& params
 // ==================================================================================
 ModelCurveData ModelManager::calculateModel3(const QMap<QString, double>& params)
 {
-    // 保持现状，调用 Model1 计算，确保不崩溃
     return calculateModel1(params);
 }
 
 // ==================================================================================
-//  通用导数计算 (加权中心差分)
+//  导数计算 - 重构为调用 PressureDerivativeCalculator
 // ==================================================================================
 void ModelManager::computePressureDerivative(const QVector<double>& tD, const QVector<double>& pd,
                                              double cD, QVector<double>& dpd, QVector<double>& td_dpd)
 {
-    dpd.clear(); td_dpd.clear();
-    if (tD.size() < 3) return;
+    // 清空输出向量
+    dpd.clear();
+    td_dpd.clear();
 
-    QVector<double> td;
-    td.reserve(tD.size());
-    for (double tD_val : tD) td.append(tD_val / cD);
+    if (tD.size() < 3 || pd.size() != tD.size()) return;
 
-    QVector<double> log_td, log_pd;
-    for (int i = 0; i < td.size(); ++i) {
-        if (td[i] > 0 && pd[i] > 0) {
-            log_td.append(log(td[i]));
-            log_pd.append(log(pd[i]));
-        }
+    if (cD <= 0) cD = 1e-8; // 保护性检查
+
+    // 1. 准备计算数据
+    // 理论曲线计算中，PressureDerivativeCalculator 需要的是对数坐标下的导数 dP/dln(t)
+    // 传入的时间 t 应该是经过井筒储存系数校正后的时间 tD/cD，
+    // 因为导数是在双对数坐标图上绘制的，横坐标是 tD/cD。
+    // 然而 Bourdet 算法计算的是 P' = dP / d(ln T)。
+    // 由于 d(ln(t/C)) = d(ln t - ln C) = d(ln t)，常数 C 不影响导数值，只影响横坐标位置。
+    // 因此我们可以直接传入调整后的时间 vector，或者原始时间 vector。
+    // 为了让 td_dpd 输出正确，我们先构建调整后的时间向量。
+
+    QVector<double> adjustedTime;
+    adjustedTime.reserve(tD.size());
+    for (double t : tD) {
+        // 使用 tD/cD 作为时间轴
+        double val = (t > 0) ? (t / cD) : 1e-10;
+        adjustedTime.append(val);
     }
 
-    if (log_td.size() < 3) return;
+    // 2. 调用核心算法
+    // 对于理论模型曲线，数据点通常是等对数间距生成的，非常光滑。
+    // 使用较小的 L-Spacing (如 0.1 或更小) 可以获得精确的数值导数。
+    // 如果设置为 0.15 或更大，可能会在曲线极值处产生轻微的平滑偏差。
+    double lSpacing = 0.1;
 
-    QVector<double> dlogP_dlogt;
-    dlogP_dlogt.reserve(log_td.size());
+    dpd = PressureDerivativeCalculator::calculateBourdetDerivative(adjustedTime, pd, lSpacing);
 
-    if (log_td.size() >= 2) {
-        dlogP_dlogt.append((log_pd[1]-log_pd[0])/(log_td[1]-log_td[0]));
-    }
+    // 3. 设置导数对应的时间轴 (即 tD/cD)
+    // 注意：Bourdet 算法返回的导数向量大小与输入一致
+    td_dpd = adjustedTime;
 
-    for (int i = 1; i < log_td.size() - 1; ++i) {
-        double h1 = log_td[i] - log_td[i-1];
-        double h2 = log_td[i+1] - log_td[i];
-        double weight1 = h2 / (h1 + h2);
-        double weight2 = h1 / (h1 + h2);
-        double derivative = weight1 * ((log_pd[i]-log_pd[i-1])/h1) + weight2 * ((log_pd[i+1]-log_pd[i])/h2);
-        dlogP_dlogt.append(derivative);
-    }
-
-    if (log_td.size() >= 2) {
-        int n = log_td.size();
-        dlogP_dlogt.append((log_pd[n-1]-log_pd[n-2])/(log_td[n-1]-log_td[n-2]));
-    }
-
-    // 简单平滑
-    if (dlogP_dlogt.size() > 5) {
-        QVector<double> smoothed = dlogP_dlogt;
-        for (int i = 2; i < dlogP_dlogt.size() - 2; ++i) {
-            smoothed[i] = dlogP_dlogt[i-2]*0.1 + dlogP_dlogt[i-1]*0.2 + dlogP_dlogt[i]*0.4 + dlogP_dlogt[i+1]*0.2 + dlogP_dlogt[i+2]*0.1;
-        }
-        dlogP_dlogt = smoothed;
-    }
-
-    for (int i = 1; i < td.size(); ++i) {
-        if (i-1 < dlogP_dlogt.size()) {
-            double dpd_val = pd[i] * dlogP_dlogt[i-1];
-            if (dpd_val > 0 && std::isfinite(dpd_val)) {
-                dpd.append(dpd_val);
-                td_dpd.append(td[i]);
-            }
-        }
-    }
+    // 移除无效点 (可选，视绘图需求而定，calculateBourdetDerivative 已处理边界为0)
+    // 这里保持原样返回所有点，由绘图模块决定如何处理 0 值
 }
 
 // ==================================================================================
@@ -515,7 +499,6 @@ double ModelManager::flaplace1(double z, const QMap<QString, double>& p) {
     QVector<double> res = solveLinearSystem(E, F);
     if (res.size() <= sz) return 0.0;
 
-    // 修改点：直接返回求解结果，不套用井筒储存和表皮公式，与 ModelWidget1 保持一致
     return res[sz];
 }
 
@@ -528,8 +511,6 @@ double ModelManager::flaplace2(double z, const QMap<QString, double>& p) {
     double yy = p.value("yy", 295.0);
     double y = p.value("y", 2758.0);
     double CFD = p.value("CFD", 0.9);
-    // double S = p.value("S", 0.81);
-    // double cD = p.value("cD", 8.08e-8);
 
     if(mf<=0 || nf<=0) return 0.0;
 
@@ -566,7 +547,6 @@ double ModelManager::flaplace2(double z, const QMap<QString, double>& p) {
     QVector<double> res = solveLinearSystem(I, F);
     if(res.size() <= sz+mf) return 0.0;
 
-    // 修改点：直接返回结果，移除 CD/S 修正，与 ModelWidget 保持一致
     return res[sz+mf];
 }
 

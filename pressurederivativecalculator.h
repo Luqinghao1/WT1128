@@ -46,7 +46,7 @@ struct PressureDerivativeConfig {
  * 使用Bourdet导数算法（L-Spacing平滑算法）计算压力导数：
  * P' = dP/d(ln t) = t * dP/dt
  *
- * 核心算法已提取为静态方法，供 FittingWidget 等模块复用。
+ * 核心算法已提取为静态方法，供 FittingWidget, ModelManager 等模块复用。
  */
 class PressureDerivativeCalculator : public QObject
 {
@@ -77,10 +77,10 @@ public:
     // =========================================================================
 
     /**
-     * @brief 使用Bourdet导数算法计算导数
-     * @param timeData 时间数据
+     * @brief 使用Bourdet导数算法计算导数 (统一入口)
+     * @param timeData 时间数据 (t)
      * @param pressureDropData 压降数据 (Delta P)
-     * @param lSpacing L-Spacing参数 (通常0.1-0.5)
+     * @param lSpacing L-Spacing参数 (通常0.1-0.5，理论曲线计算时可设为0.0-0.1)
      * @return 导数数据向量
      */
     static QVector<double> calculateBourdetDerivative(const QVector<double>& timeData,

@@ -3,62 +3,93 @@
 
 #include <QObject>
 #include <QWidget>
-#include <QComboBox>
 #include <QStackedWidget>
+#include <QComboBox>
 #include <QMap>
-#include <tuple>
 #include <QVector>
+#include <tuple>
 
-// Forward declarations
+// 定义模型曲线数据类型: <时间, 压力, 导数>
+typedef std::tuple<QVector<double>, QVector<double>, QVector<double>> ModelCurveData;
+
 class ModelWidget1;
 class ModelWidget2;
 class ModelWidget3;
 
-// Define the return type for curve data: (Time, Pressure, Derivative)
-typedef std::tuple<QVector<double>, QVector<double>, QVector<double>> ModelCurveData;
-
 class ModelManager : public QObject
 {
     Q_OBJECT
+
 public:
     enum ModelType {
-        InfiniteConductive = 0,
-        FiniteConductive,
-        SegmentedMultiCluster
+        InfiniteConductive = 0,    // 无限导流
+        FiniteConductive = 1,      // 有限导流
+        SegmentedMultiCluster = 2  // 分段多簇
     };
     Q_ENUM(ModelType)
 
     explicit ModelManager(QWidget* parent = nullptr);
     ~ModelManager();
 
+    // UI初始化
     void initializeModels(QWidget* parentWidget);
+    QWidget* getMainWidget() const { return m_mainWidget; }
 
-    // Get current model type
+    // 模型切换
+    void switchToModel(ModelType modelType);
     ModelType getCurrentModelType() const { return m_currentModelType; }
 
-    // Get available model names
-    static QStringList getAvailableModelTypes();
+    // 静态辅助信息
     static QString getModelTypeName(ModelType type);
+    static QStringList getAvailableModelTypes();
 
-    // Get default parameters for fitting
+    // =========================================================================
+    // 核心计算接口
+    // =========================================================================
+
+    // 获取指定模型的默认参数
     QMap<QString, double> getDefaultParameters(ModelType type);
 
-    // Calculate theoretical curve based on parameters
+    // 计算理论曲线 (返回: 时间, 压力, 导数)
     ModelCurveData calculateTheoreticalCurve(ModelType type, const QMap<QString, double>& params);
 
 signals:
     void modelSwitched(ModelType newType, ModelType oldType);
-    void calculationCompleted(const QString& analysisType, const QMap<QString, double>& results);
+    void calculationCompleted(const QString& title, const QMap<QString, double>& results);
 
 private slots:
     void onModelTypeSelectionChanged(int index);
-
-    // Slots to receive results from individual model widgets
-    void onModel1CalculationCompleted(const QString& type, const QMap<QString, double>& results);
-    void onModel2CalculationCompleted(const QString& type, const QMap<QString, double>& results);
-    void onModel3CalculationCompleted(const QString& type, const QMap<QString, double>& results);
+    void onModel1CalculationCompleted(const QString& t, const QMap<QString, double>& r);
+    void onModel2CalculationCompleted(const QString& t, const QMap<QString, double>& r);
+    void onModel3CalculationCompleted(const QString& t, const QMap<QString, double>& r);
 
 private:
+    void createMainWidget();
+    void setupModelSelection();
+    void connectModelSignals();
+
+    // 具体模型计算实现
+    ModelCurveData calculateModel1(const QMap<QString, double>& params);
+    ModelCurveData calculateModel2(const QMap<QString, double>& params);
+    ModelCurveData calculateModel3(const QMap<QString, double>& params);
+
+    // 使用 PressureDerivativeCalculator 替代原来的手动计算
+    void computePressureDerivative(const QVector<double>& tD, const QVector<double>& pd,
+                                   double cD, QVector<double>& dpd, QVector<double>& td_dpd);
+
+    // 数学辅助函数
+    double flaplace1(double z, const QMap<QString, double>& p);
+    double flaplace2(double z, const QMap<QString, double>& p);
+    double e_function(double z, int i, int j, int k, int v, int mf, int nf, double omega, double lambda, double Xf, double yy, double y);
+    double f_function(int j, int nf, double Xf, double y);
+    double integralBesselK0(double XDkv, double YDkv, double yDij, double fz, double a, double b);
+    double gaussQuadrature(double XDkv, double YDkv, double yDij, double fz, double a, double b);
+    double besselK0(double x);
+    QVector<double> solveLinearSystem(const QVector<QVector<double>>& A, const QVector<double>& b);
+    double stefestCoefficient(int i, int N);
+    double factorial(int n);
+
+    // UI 组件
     QWidget* m_mainWidget;
     QComboBox* m_modelTypeCombo;
     QStackedWidget* m_modelStack;
@@ -68,44 +99,6 @@ private:
     ModelWidget3* m_modelWidget3;
 
     ModelType m_currentModelType;
-
-    void createMainWidget();
-    void setupModelSelection();
-    void connectModelSignals();
-    void switchToModel(ModelType modelType);
-
-    // --- Mathematical Calculation Core ---
-
-    // Calculate curves for specific models
-    ModelCurveData calculateModel1(const QMap<QString, double>& params);
-    ModelCurveData calculateModel2(const QMap<QString, double>& params);
-    ModelCurveData calculateModel3(const QMap<QString, double>& params);
-
-    // Generic Derivative Calculation
-    void computePressureDerivative(const QVector<double>& tD, const QVector<double>& pd,
-                                   double cD, QVector<double>& dpd, QVector<double>& td_dpd);
-
-    // Numerical Inversion (Stehfest) helper
-    double stefestCoefficient(int i, int N);
-    double factorial(int n);
-
-    // Laplace space functions (Model Specific)
-    // [FIX] Added declarations for specific flaplace functions
-    double flaplace(double z, const QMap<QString, double>& params); // Keep generic if needed, or remove
-    double flaplace1(double z, const QMap<QString, double>& p); // Infinite Conductivity
-    double flaplace2(double z, const QMap<QString, double>& p); // Finite Conductivity
-    double flaplace3(double z, const QMap<QString, double>& p); // Segmented Multi-Cluster
-
-    // Bessel functions and Integration
-    double e_function(double z, int i, int j, int k, int v, int mf, int nf, double omega, double lambda, double Xf, double yy, double y);
-    double f_function(int j, int nf, double Xf, double y);
-
-    double integralBesselK0(double XDkv, double YDkv, double yDij, double fz, double a, double b);
-    double gaussQuadrature(double XDkv, double YDkv, double yDij, double fz, double a, double b);
-    double besselK0(double x);
-
-    // Linear Algebra
-    QVector<double> solveLinearSystem(const QVector<QVector<double>>& A, const QVector<double>& b);
 };
 
 #endif // MODELMANAGER_H

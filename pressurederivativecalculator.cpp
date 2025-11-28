@@ -124,8 +124,6 @@ PressureDerivativeResult PressureDerivativeCalculator::calculatePressureDerivati
     emit progressUpdated(30, "正在计算压降...");
 
     // 计算压降 (初始压力 - 当前压力，假定是压降测试)
-    // 注意：如果是恢复测试(Buildup)，通常需要输入Delta t和Delta P。
-    // 这里保持原逻辑：Delta P = P_initial - P_current
     QVector<double> pressureDropData;
     pressureDropData.reserve(rowCount);
     double initialPressure = pressureData.isEmpty() ? 0.0 : pressureData[0];
